@@ -20,7 +20,7 @@ export default function Hero() {
           <div className="flex gap-3">
             <Link
               href="/become-a-member"
-              className="btn bg-white text-slate-900 ring-1 ring-slate-200 hover:bg-slate-50"
+              className="btn bg-white text-slate-900 ring-1 ring-slate-200 hover:bg-slate-50 hover:text-slate-900"
             >
               Become a Member
             </Link>
