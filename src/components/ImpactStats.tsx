@@ -2,7 +2,7 @@ const stats = [
   { label: 'Students learning', value: '18,200+' },
   { label: 'Government schools', value: '432' },
   { label: 'Districts', value: '38' },
-  { label: 'Active volunteers', value: '1,050' }
+  { label: 'Programs running', value: '14' }
 ];
 
 export default function ImpactStats() {

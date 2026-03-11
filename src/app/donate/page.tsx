@@ -126,7 +126,7 @@ export default function DonatePage() {
               <p className="mt-1 text-slate-700">
                 An instant digital receipt with 80G details is emailed after
                 payment. You can also request duplicates via
-                hello@educatiawelfaretrust.org.
+                educatiawelfaretrust@gmail.com.
               </p>
             </details>
             <details className="group">

@@ -7,14 +7,15 @@ export default function Hero() {
       <div className="container py-16 grid gap-10 md:grid-cols-2 items-center">
         <div className="space-y-6">
           <p className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-sky-700 ring-1 ring-sky-100">
-            Community-first education
+            Free education support
           </p>
           <h1 className="text-4xl md:text-5xl font-bold leading-tight text-slate-900">
-            Free Online Education for Classes 9–12 Government School Students
+            Free Educational Support for Class 9 to 12 Students
           </h1>
           <p className="text-lg text-slate-700">
-            Instant access to quality lessons, mentorship, and digital
-            resources—at no cost to families or schools.
+            Every child has potential to learn. Help them to thrive by
+            supporting structured academics, soft skills, and practical skill
+            development.
           </p>
           <div className="flex gap-3">
             <Link
@@ -31,7 +32,7 @@ export default function Hero() {
         <div className="relative">
           <div className="overflow-hidden rounded-2xl shadow-xl">
             <Image
-              src="https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80"
+              src="https://images.unsplash.com/photo-1573894999291-f440466112cc?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               alt="Students learning online"
               width={1200}
               height={900}

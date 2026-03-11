@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { submitForm } from '@/lib/formSubmission';
 
 type RoleKey = 'student' | 'parent' | 'volunteer' | 'teacher';
 
@@ -55,18 +56,31 @@ const roles: Record<
 export default function BecomeMemberPage() {
   const [role, setRole] = useState<RoleKey>('student');
   const [form, setForm] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState('');
   const current = useMemo(() => roles[role], [role]);
 
   const updateField = (name: string, value: string) => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: send to central sheet/CRM via API endpoint
-    console.log('Submit', { role, ...form });
-    alert('Thanks! We received your details and will reach out shortly.');
-    setForm({});
+    try {
+      setLoading(true);
+      setStatus('');
+      await submitForm({
+        source: 'Become a Member',
+        formType: roles[role].label,
+        data: form
+      });
+      setStatus('Submitted successfully. We will contact you shortly.');
+      setForm({});
+    } catch (error: any) {
+      setStatus(error?.message || 'Submission failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -111,9 +125,10 @@ export default function BecomeMemberPage() {
             />
           ))}
         </div>
-        <button type="submit" className="btn w-full md:w-auto">
-          Submit {current.label} form
+        <button type="submit" className="btn w-full md:w-auto" disabled={loading}>
+          {loading ? 'Submitting...' : `Submit ${current.label} form`}
         </button>
+        {status ? <p className="text-xs text-slate-600">{status}</p> : null}
       </form>
     </div>
   );
