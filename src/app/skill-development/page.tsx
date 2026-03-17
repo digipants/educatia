@@ -1,25 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-
-const programs = [
-  'Digital and IT Skills',
-  'Employment Oriented Vocational Courses',
-  'Entrepreneurship and Business Skills',
-  'Green Jobs and Sustainability',
-  'Agriculture and Rural Skills',
-  'Food Industry and Culinary Skills',
-  'Financial and Corporate Skills',
-  'Law and Public Service Support',
-  'Tourism and Tour Guide Training',
-  'Beauty and Wellness'
-];
-
-const visuals = [
-  'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80'
-];
+import { skillDevelopmentSubcategories } from '@/lib/programSubcategories';
 
 export default function SkillDevelopmentPage() {
   return (
@@ -46,22 +27,23 @@ export default function SkillDevelopmentPage() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-2">
-        {programs.map((program, index) => (
-          <article key={program} className="card flex gap-3 items-start">
+        {skillDevelopmentSubcategories.map((program) => (
+          <article key={program.slug} className="card flex gap-3 items-start">
             <div className="relative h-16 w-16 overflow-hidden rounded-lg shrink-0">
               <Image
-                src={visuals[index % visuals.length]}
-                alt={program}
+                src={program.image}
+                alt={program.title}
                 fill
                 className="object-cover"
                 sizes="64px"
               />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">{program}</h2>
-              <p className="mt-1 text-sm text-slate-700">
-                Practical training aligned with current market needs and real-world application.
-              </p>
+              <h2 className="text-lg font-semibold text-slate-900">{program.title}</h2>
+              <p className="mt-1 text-sm text-slate-700">{program.highlight}</p>
+              <Link href={`/skill-development/${program.slug}`} className="mt-2 inline-flex text-sm font-semibold text-sky-700 hover:underline">
+                View details
+              </Link>
             </div>
           </article>
         ))}
@@ -83,6 +65,17 @@ export default function SkillDevelopmentPage() {
               sizes="(min-width: 768px) 50vw, 100vw"
             />
           </div>
+        </div>
+      </section>
+
+      <section className="card space-y-3">
+        <h2 className="text-xl font-semibold">All Courses</h2>
+        <div className="grid gap-3 md:grid-cols-2">
+          {skillDevelopmentSubcategories.map((item) => (
+            <Link key={item.slug} href={`/skill-development/${item.slug}`} className="rounded-lg border border-slate-200 p-3 text-sm hover:border-sky-300 hover:bg-sky-50 transition">
+              {item.title}
+            </Link>
+          ))}
         </div>
       </section>
 

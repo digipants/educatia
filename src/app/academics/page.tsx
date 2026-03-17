@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { academicsSubcategories } from '@/lib/programSubcategories';
 
 const support = [
   'Structured Study On Screen sessions',
@@ -80,6 +81,17 @@ export default function AcademicsPage() {
               sizes="(min-width: 768px) 50vw, 100vw"
             />
           </div>
+        </div>
+      </section>
+
+      <section className="card space-y-3">
+        <h2 className="text-xl font-semibold">All Courses</h2>
+        <div className="grid gap-3 md:grid-cols-2">
+          {academicsSubcategories.map((item) => (
+            <Link key={item.slug} href={`/academics/${item.slug}`} className="rounded-lg border border-slate-200 p-3 text-sm hover:border-sky-300 hover:bg-sky-50 transition">
+              {item.title}
+            </Link>
+          ))}
         </div>
       </section>
 
