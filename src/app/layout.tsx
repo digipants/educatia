@@ -2,6 +2,7 @@ import '../styles/globals.css';
 import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import SocialBar from '@/components/SocialBar';
 
 export const metadata: Metadata = {
   title: 'Educatia',
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body className="bg-slate-50 text-slate-900">
         <div className="min-h-screen flex flex-col">
           <Navbar />
+          <SocialBar />
           <main className="flex-1">{children}</main>
           <Footer />
         </div>
