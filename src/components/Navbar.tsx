@@ -36,8 +36,8 @@ export default function Navbar() {
   };
 
   return (
-    <header className="relative z-50 border-b border-slate-200 bg-white/80 backdrop-blur">
-      <div className="container flex items-center justify-between py-4">
+    <header className="sticky top-0 z-50 px-2 pt-2 sm:px-3">
+      <div className="container liquid-glass rounded-[24px] flex items-center justify-between px-4 py-3 sm:px-5">
         <Link href="/" className="flex items-center gap-3 font-semibold text-slate-900">
           <Image
             src="/images/logo.png"
@@ -63,13 +63,13 @@ export default function Navbar() {
                   <span className="text-xs">v</span>
                 </Link>
                 <div className="absolute left-0 top-full z-50 pt-2 hidden group-hover:block group-focus-within:block">
-                  <div className="w-52 rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
+                  <div className="liquid-glass-soft w-52 rounded-2xl p-2">
                     {programLinks.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
-                        className={`block rounded-md px-3 py-2 text-sm hover:bg-slate-50 hover:text-brand-primary ${
-                          pathname === item.href ? 'text-brand-primary bg-slate-50' : 'text-slate-700'
+                        className={`block rounded-xl px-3 py-2 text-sm hover:bg-white/55 hover:text-brand-primary ${
+                          pathname === item.href ? 'text-brand-primary bg-white/65' : 'text-slate-700'
                         }`}
                       >
                         {item.label}
@@ -96,7 +96,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setIsMobileOpen((prev) => !prev)}
-            className="md:hidden inline-flex h-10 items-center justify-center rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-700"
+            className="md:hidden inline-flex h-10 items-center justify-center rounded-full border border-white/50 bg-white/45 px-3 text-sm font-medium text-slate-700 backdrop-blur-md"
             aria-expanded={isMobileOpen}
             aria-label="Toggle menu"
           >
@@ -106,20 +106,20 @@ export default function Navbar() {
       </div>
 
       {isMobileOpen ? (
-        <div className="md:hidden border-t border-slate-200 bg-white">
-          <nav className="container py-3 space-y-1 text-sm font-medium text-slate-700">
+        <div className="md:hidden px-2 pt-2 sm:px-3">
+          <nav className="container liquid-glass-soft rounded-[24px] py-3 space-y-1 text-sm font-medium text-slate-700">
             <Link
               href="/"
               onClick={closeMobileMenu}
-              className={`block rounded-md px-3 py-2 ${pathname === '/' ? 'bg-slate-50 text-brand-primary' : 'hover:bg-slate-50'}`}
+              className={`block rounded-xl px-3 py-2 ${pathname === '/' ? 'bg-white/65 text-brand-primary' : 'hover:bg-white/50'}`}
             >
               Home
             </Link>
             <button
               type="button"
               onClick={() => setIsMobileProgramsOpen((prev) => !prev)}
-              className={`flex w-full items-center justify-between rounded-md px-3 py-2 ${
-                isProgramsActive ? 'bg-slate-50 text-brand-primary' : 'hover:bg-slate-50'
+              className={`flex w-full items-center justify-between rounded-xl px-3 py-2 ${
+                isProgramsActive ? 'bg-white/65 text-brand-primary' : 'hover:bg-white/50'
               }`}
             >
               <span>Programs</span>
@@ -132,8 +132,8 @@ export default function Navbar() {
                     key={item.href}
                     href={item.href}
                     onClick={closeMobileMenu}
-                    className={`block rounded-md px-3 py-2 ${
-                      pathname === item.href ? 'bg-slate-50 text-brand-primary' : 'hover:bg-slate-50'
+                    className={`block rounded-xl px-3 py-2 ${
+                      pathname === item.href ? 'bg-white/65 text-brand-primary' : 'hover:bg-white/50'
                     }`}
                   >
                     {item.label}
@@ -148,8 +148,8 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   onClick={closeMobileMenu}
-                  className={`block rounded-md px-3 py-2 ${
-                    pathname === item.href ? 'bg-slate-50 text-brand-primary' : 'hover:bg-slate-50'
+                  className={`block rounded-xl px-3 py-2 ${
+                    pathname === item.href ? 'bg-white/65 text-brand-primary' : 'hover:bg-white/50'
                   }`}
                 >
                   {item.label}

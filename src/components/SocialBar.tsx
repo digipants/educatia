@@ -56,7 +56,7 @@ const links = [
 export default function SocialBar() {
   return (
     <aside className="fixed right-2 top-1/2 z-40 -translate-y-1/2 sm:right-3 md:right-4">
-      <div className="rounded-[24px] border border-white/40 bg-white/20 p-1.5 shadow-[0_20px_60px_rgba(15,23,42,0.16)] backdrop-blur-xl sm:rounded-[28px] sm:p-2">
+      <div className="liquid-glass rounded-[24px] p-1.5 sm:rounded-[28px] sm:p-2">
         <div className="flex flex-col gap-1.5 sm:gap-2">
           {links.map((link) => (
             <a
