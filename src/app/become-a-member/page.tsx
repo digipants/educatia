@@ -3,52 +3,45 @@
 import { useMemo, useState } from 'react';
 import { submitForm } from '@/lib/formSubmission';
 
-type RoleKey = 'student' | 'parent' | 'volunteer' | 'teacher';
+type RoleKey = 'student' | 'volunteer';
+type RoleField = {
+  name: string;
+  placeholder: string;
+  type?: string;
+  options?: string[];
+};
 
 const roles: Record<
   RoleKey,
-  { label: string; description: string; fields: Array<{ name: string; placeholder: string; type?: string }> }
+  { label: string; description: string; fields: RoleField[] }
 > = {
   student: {
     label: 'Student',
     description: 'Students from government schools seeking free online classes.',
     fields: [
-      { name: 'name', placeholder: 'Name' },
-      { name: 'class', placeholder: 'Class (e.g., 7th)' },
-      { name: 'school', placeholder: 'School' },
-      { name: 'parentMobile', placeholder: 'Parent Mobile', type: 'tel' },
-      { name: 'medium', placeholder: 'Medium (English/Hindi/etc.)' },
-      { name: 'district', placeholder: 'District' }
-    ]
-  },
-  parent: {
-    label: 'Parent',
-    description: 'Enroll your child for structured, monitored online learning.',
-    fields: [
-      { name: 'name', placeholder: 'Your Name' },
-      { name: 'childName', placeholder: 'Child Name' },
-      { name: 'class', placeholder: 'Class (e.g., 5th)' },
-      { name: 'mobile', placeholder: 'Mobile', type: 'tel' },
-      { name: 'city', placeholder: 'City' }
+      { name: 'fullName', placeholder: 'Full Name' },
+      { name: 'dob', placeholder: 'DOB', type: 'date' },
+      { name: 'gender', placeholder: 'Gender', options: ['Male', 'Female', 'Other'] },
+      { name: 'classOrGrade', placeholder: 'Class / Grade Currently Studying In' },
+      { name: 'parentOrGuardianFullName', placeholder: 'Parent / Guardian Full Name' },
+      { name: 'parentOrGuardianContactNo', placeholder: 'Parent / Guardian Contact No', type: 'tel' },
+      { name: 'studentWhatsappNo', placeholder: 'Whatsapp No. of Student', type: 'tel' },
+      { name: 'emailId', placeholder: 'Email ID', type: 'email' },
+      { name: 'program', placeholder: 'Program', options: ['Academics', 'Spoken English'] }
     ]
   },
   volunteer: {
     label: 'Volunteer',
     description: 'Teach, mentor, or support operations remotely or onsite.',
     fields: [
-      { name: 'skills', placeholder: 'Skills (STEM, languages, ops, design...)' },
-      { name: 'availability', placeholder: 'Availability (hours/week, days)' },
-      { name: 'location', placeholder: 'Location / Time zone' }
-    ]
-  },
-  teacher: {
-    label: 'Teacher',
-    description: 'Partner to deliver curriculum-aligned lessons and assessments.',
-    fields: [
-      { name: 'subjects', placeholder: 'Subjects' },
-      { name: 'classes', placeholder: 'Classes you teach' },
-      { name: 'experience', placeholder: 'Experience (years, board/curriculum)' },
-      { name: 'demo', placeholder: 'Demo lesson link (Drive/YouTube)' }
+      { name: 'fullName', placeholder: 'Full Name' },
+      { name: 'dob', placeholder: 'DOB', type: 'date' },
+      { name: 'gender', placeholder: 'Gender', options: ['Male', 'Female', 'Other'] },
+      { name: 'mobile', placeholder: 'Mobile', type: 'tel' },
+      { name: 'whatsapp', placeholder: 'Whatsapp', type: 'tel' },
+      { name: 'email', placeholder: 'Email', type: 'email' },
+      { name: 'address', placeholder: 'Address' },
+      { name: 'serviceOrAreaOfExpertise', placeholder: 'Service Which You Can Offer / Area of Expertise' }
     ]
   }
 };
@@ -114,15 +107,32 @@ export default function BecomeMemberPage() {
         </div>
         <div className="grid gap-3 md:grid-cols-2">
           {current.fields.map((field) => (
-            <input
-              key={field.name}
-              type={field.type || 'text'}
-              required
-              placeholder={field.placeholder}
-              value={form[field.name] ?? ''}
-              onChange={(e) => updateField(field.name, e.target.value)}
-              className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm"
-            />
+            field.options ? (
+              <select
+                key={field.name}
+                required
+                value={form[field.name] ?? ''}
+                onChange={(e) => updateField(field.name, e.target.value)}
+                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm"
+              >
+                <option value="">{field.placeholder}</option>
+                {field.options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                key={field.name}
+                type={field.type || 'text'}
+                required
+                placeholder={field.placeholder}
+                value={form[field.name] ?? ''}
+                onChange={(e) => updateField(field.name, e.target.value)}
+                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm"
+              />
+            )
           ))}
         </div>
         <button type="submit" className="btn w-full md:w-auto" disabled={loading}>

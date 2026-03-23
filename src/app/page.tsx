@@ -136,7 +136,7 @@ export default function Home() {
 
       <section className="container">
         <h2 className="text-2xl font-semibold text-slate-900 mb-4">
-          Programs (Menu)
+          Programs
         </h2>
         <div className="grid gap-6 md:grid-cols-3">
           {programMenu.map((item) => (
@@ -160,10 +160,6 @@ export default function Home() {
             </article>
           ))}
         </div>
-      </section>
-
-      <section className="container">
-        <ImpactStats />
       </section>
 
       <section className="container grid gap-6 md:grid-cols-2">

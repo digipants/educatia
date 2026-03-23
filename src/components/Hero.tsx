@@ -41,7 +41,7 @@ export default function Hero() {
             />
           </div>
           <div className="absolute -left-6 -bottom-6 rounded-xl bg-white p-4 shadow-md text-sm max-w-xs">
-            "My students built their first solar car with Educatia kits." — A.
+            "Students are performing well with Educatia kits." — A.
             Patel, Teacher
           </div>
         </div>

@@ -11,7 +11,7 @@ export default function DonationCampaignPage() {
   const goal = {
     title: 'Sponsor 1,000 Students for 1 Year',
     problem:
-      'Government school students risk falling behind without devices, data, and live academic support. Many rely on shared phones, have patchy connectivity, and no guided practice after school—widening the learning gap every exam cycle.',
+      'Most of the students risk falling behind without devices, data, and live academic support. Many rely on shared phones, have patchy connectivity, and no guided practice after school restricts their ability to widen their thought sphere. To address this gap, we provide dedicated learning devices, data connectivity and live academic support, enabling students to learn without interruption.',
     breakdown: [
       { label: 'Tablet + protective case', amount: 5500 },
       { label: '1-year data pack', amount: 1800 },
