@@ -55,9 +55,9 @@ const links = [
 
 export default function SocialBar() {
   return (
-    <aside className="fixed right-4 top-1/2 z-40 hidden -translate-y-1/2 md:block">
-      <div className="rounded-[28px] border border-white/40 bg-white/20 p-2 shadow-[0_20px_60px_rgba(15,23,42,0.16)] backdrop-blur-xl">
-        <div className="flex flex-col gap-2">
+    <aside className="fixed right-2 top-1/2 z-40 -translate-y-1/2 sm:right-3 md:right-4">
+      <div className="rounded-[24px] border border-white/40 bg-white/20 p-1.5 shadow-[0_20px_60px_rgba(15,23,42,0.16)] backdrop-blur-xl sm:rounded-[28px] sm:p-2">
+        <div className="flex flex-col gap-1.5 sm:gap-2">
           {links.map((link) => (
             <a
               key={link.label}
@@ -65,7 +65,7 @@ export default function SocialBar() {
               target="_blank"
               rel="noreferrer"
               aria-label={link.label}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/55 text-slate-700 transition hover:-translate-y-0.5 hover:bg-white/80 hover:text-sky-700"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/55 text-slate-700 transition hover:-translate-y-0.5 hover:bg-white/80 hover:text-sky-700 sm:h-10 sm:w-10 md:h-11 md:w-11"
             >
               {link.icon}
             </a>
