@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 type SubmissionPayload = {
   formType: string;
   source: string;
@@ -19,7 +22,7 @@ function escapeHtml(value: string) {
 }
 
 function createTransporter() {
-  const host = process.env.SMTP_HOST;
+  const host = process.env.SMTP_HOST || 'smtp.gmail.com';
   const port = Number(process.env.SMTP_PORT || '587');
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
@@ -68,10 +71,12 @@ export async function POST(request: Request) {
 
     const transporter = createTransporter();
     const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@educatiawelfaretrust.org';
+    const replyTo = payload.data.email || payload.data.emailId || process.env.SMTP_USER;
 
     await transporter.sendMail({
       from,
       to: recipient,
+      replyTo,
       subject: `[Educatia] ${payload.source} - ${payload.formType} submission`,
       text: asText(payload),
       html: asHtml(payload)
