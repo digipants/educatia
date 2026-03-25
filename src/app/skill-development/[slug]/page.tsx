@@ -1,10 +1,27 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { findSubcategory, skillDevelopmentSubcategories } from '@/lib/programSubcategories';
+import { createPageMetadata } from '@/lib/seo';
 
 export function generateStaticParams() {
   return skillDevelopmentSubcategories.map((item) => ({ slug: item.slug }));
+}
+
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const current = findSubcategory(skillDevelopmentSubcategories, params.slug);
+  if (!current) {
+    return {};
+  }
+
+  return createPageMetadata({
+    title: current.title,
+    description: current.highlight,
+    path: `/skill-development/${current.slug}`,
+    keywords: ['skill development', current.title],
+    image: current.image
+  });
 }
 
 export default function SkillDevelopmentSubcategoryPage({ params }: { params: { slug: string } }) {

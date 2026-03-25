@@ -1,6 +1,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { academicsSubcategories } from '@/lib/programSubcategories';
+import { createPageMetadata } from '@/lib/seo';
+
+export const metadata = createPageMetadata({
+  title: 'Academics Program',
+  description:
+    'Free academic support for Class 9 to 12 students with structured Study On Screen sessions, revision support, and board exam guidance.',
+  path: '/academics',
+  keywords: ['board exam support', 'study on screen', 'free academic classes'],
+  image:
+    'https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80'
+});
 
 const support = [
   'Structured Study On Screen sessions',

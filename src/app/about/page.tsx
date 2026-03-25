@@ -1,4 +1,15 @@
 import Image from 'next/image';
+import { createPageMetadata } from '@/lib/seo';
+
+export const metadata = createPageMetadata({
+  title: 'About Educatia Welfare Trust',
+  description:
+    'Learn about Educatia Welfare Trust, its mission to provide free education, and its vision to uplift learners through academics, soft skills, and career readiness.',
+  path: '/about',
+  keywords: ['about Educatia', 'education trust India', 'nonprofit mission'],
+  image:
+    'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=1200&q=80'
+});
 
 export default function AboutPage() {
   return (

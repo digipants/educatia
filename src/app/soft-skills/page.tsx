@@ -1,6 +1,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { softSkillsSubcategories } from '@/lib/programSubcategories';
+import { createPageMetadata } from '@/lib/seo';
+
+export const metadata = createPageMetadata({
+  title: 'Soft Skills Program',
+  description:
+    'Build spoken English, confidence, personality enhancement, and public speaking skills through Educatia Welfare Trust soft skills programs.',
+  path: '/soft-skills',
+  keywords: ['spoken English classes', 'public speaking training', 'personality development'],
+  image:
+    'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80'
+});
 
 export default function SoftSkillsPage() {
   return (

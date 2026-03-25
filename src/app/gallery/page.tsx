@@ -1,3 +1,13 @@
+import { createPageMetadata } from '@/lib/seo';
+
+export const metadata = createPageMetadata({
+  title: 'Gallery',
+  description:
+    'View classroom, school visit, volunteer, and student participation highlights from Educatia Welfare Trust programs.',
+  path: '/gallery',
+  keywords: ['education NGO gallery', 'school visit photos', 'student participation']
+});
+
 const albums = [
   {
     title: "School Visits",

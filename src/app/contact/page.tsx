@@ -1,6 +1,17 @@
 import Image from "next/image";
 import StudentForm from "@/forms/StudentForm";
 import VolunteerForm from "@/forms/VolunteerForm";
+import { createPageMetadata } from "@/lib/seo";
+
+export const metadata = createPageMetadata({
+  title: "Contact and Join",
+  description:
+    "Contact Educatia Welfare Trust or submit student and volunteer forms to join programs and support initiatives.",
+  path: "/contact",
+  keywords: ["contact education trust", "student enrollment form", "volunteer form"],
+  image:
+    "https://plus.unsplash.com/premium_photo-1682098120982-6d2bb64f64a8?q=80",
+});
 
 export default function ContactPage() {
   return (

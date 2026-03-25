@@ -1,6 +1,17 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { skillDevelopmentSubcategories } from '@/lib/programSubcategories';
+import { createPageMetadata } from '@/lib/seo';
+
+export const metadata = createPageMetadata({
+  title: 'Skill Development Program',
+  description:
+    'Explore practical skill development programs in digital skills, vocational training, entrepreneurship, sustainability, tourism, wellness, and more.',
+  path: '/skill-development',
+  keywords: ['vocational training', 'digital skills', 'entrepreneurship program'],
+  image:
+    'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=80'
+});
 
 export default function SkillDevelopmentPage() {
   return (

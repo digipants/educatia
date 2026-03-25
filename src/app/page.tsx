@@ -2,6 +2,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Hero from '@/components/Hero';
 import ImpactStats from '@/components/ImpactStats';
+import { createPageMetadata } from '@/lib/seo';
+
+export const metadata = createPageMetadata({
+  title: 'Free Education Support for Students',
+  description:
+    'Educatia Welfare Trust offers free education support, spoken English, soft skills and skill development programs for learners from underserved communities.',
+  path: '/',
+  keywords: ['free education NGO', 'student support India', 'academics and soft skills'],
+  image:
+    'https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80'
+});
 
 const programMenu = [
   {

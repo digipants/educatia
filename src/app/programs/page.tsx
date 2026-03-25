@@ -1,5 +1,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { createPageMetadata } from '@/lib/seo';
+
+export const metadata = createPageMetadata({
+  title: 'Programs',
+  description:
+    'Explore Educatia Welfare Trust programs in academics, soft skills, and skill development for learners seeking free support and practical growth.',
+  path: '/programs',
+  keywords: ['education programs', 'soft skills training', 'skill development NGO'],
+  image:
+    'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80'
+});
 
 const menu = [
   {

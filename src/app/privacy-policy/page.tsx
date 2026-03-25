@@ -1,3 +1,13 @@
+import { createPageMetadata } from '@/lib/seo';
+
+export const metadata = createPageMetadata({
+  title: 'Privacy Policy',
+  description:
+    'Read the Educatia Welfare Trust privacy policy covering data collection, usage, cookies, user rights, and data protection practices.',
+  path: '/privacy-policy',
+  keywords: ['privacy policy', 'data protection', 'user rights']
+});
+
 const sections = [
   {
     title: "1. Information We Collect",

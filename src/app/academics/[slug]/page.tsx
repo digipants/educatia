@@ -1,10 +1,27 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { academicsSubcategories, findSubcategory } from '@/lib/programSubcategories';
+import { createPageMetadata } from '@/lib/seo';
 
 export function generateStaticParams() {
   return academicsSubcategories.map((item) => ({ slug: item.slug }));
+}
+
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const current = findSubcategory(academicsSubcategories, params.slug);
+  if (!current) {
+    return {};
+  }
+
+  return createPageMetadata({
+    title: current.title,
+    description: current.highlight,
+    path: `/academics/${current.slug}`,
+    keywords: ['academics program', current.title],
+    image: current.image
+  });
 }
 
 export default function AcademicsSubcategoryPage({ params }: { params: { slug: string } }) {

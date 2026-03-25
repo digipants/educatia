@@ -1,6 +1,15 @@
-'use client';
-
 import Image from 'next/image';
+import { createPageMetadata } from '@/lib/seo';
+
+export const metadata = createPageMetadata({
+  title: 'News and Updates',
+  description:
+    'Read school visits, district launches, student milestones, volunteer stories, and exam success updates from Educatia Welfare Trust.',
+  path: '/news-updates',
+  keywords: ['education NGO news', 'student success stories', 'school visit updates'],
+  image:
+    'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80'
+});
 
 type Post = {
   id: string;

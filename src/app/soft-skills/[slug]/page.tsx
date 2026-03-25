@@ -1,10 +1,27 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { findSubcategory, softSkillsSubcategories } from '@/lib/programSubcategories';
+import { createPageMetadata } from '@/lib/seo';
 
 export function generateStaticParams() {
   return softSkillsSubcategories.map((item) => ({ slug: item.slug }));
+}
+
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const current = findSubcategory(softSkillsSubcategories, params.slug);
+  if (!current) {
+    return {};
+  }
+
+  return createPageMetadata({
+    title: current.title,
+    description: current.highlight,
+    path: `/soft-skills/${current.slug}`,
+    keywords: ['soft skills', current.title],
+    image: current.image
+  });
 }
 
 export default function SoftSkillSubcategoryPage({ params }: { params: { slug: string } }) {
