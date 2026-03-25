@@ -116,7 +116,7 @@ export default function StudentForm() {
       <input
         required
         type="tel"
-        placeholder="Whatsapp No. of Student"
+        placeholder="Whatsapp No. of Student/Parent"
         value={studentWhatsapp}
         onChange={(e) => setStudentWhatsapp(e.target.value)}
         className="w-full rounded-md border border-slate-200 px-3 py-2"

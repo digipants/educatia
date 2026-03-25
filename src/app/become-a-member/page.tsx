@@ -26,7 +26,7 @@ const roles: Record<
       { name: 'instituteSchoolUniversity', placeholder: 'Institute / School / University' },
       { name: 'parentOrGuardianFullName', placeholder: 'Parent / Guardian Full Name' },
       { name: 'parentOrGuardianContactNo', placeholder: 'Parent / Guardian Contact No', type: 'tel' },
-      { name: 'studentWhatsappNo', placeholder: 'Whatsapp No. of Student', type: 'tel' },
+      { name: 'studentWhatsappNo', placeholder: 'Whatsapp No. of Student/Parent', type: 'tel' },
       { name: 'emailId', placeholder: 'Email ID', type: 'email' },
       { name: 'program', placeholder: 'Program', options: ['Academics', 'Spoken English'] }
     ]
