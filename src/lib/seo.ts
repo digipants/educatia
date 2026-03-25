@@ -8,7 +8,25 @@ export const defaultTitle =
   'Educatia Welfare Trust | Free Education, Soft Skills and Skill Development';
 export const defaultDescription =
   'Educatia Welfare Trust provides free academic support, spoken English, soft skills and practical skill development programs for learners from underserved communities.';
-export const defaultSocialImage = `${siteUrl}/images/photo-1629306262232-1f854b4b0b13.webp`;
+export const socialImageVersion = '20260325';
+
+function withVersion(url: string) {
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}v=${socialImageVersion}`;
+}
+
+function resolveSocialImage(image: string) {
+  if (image.startsWith('http://') || image.startsWith('https://')) {
+    return withVersion(image);
+  }
+
+  const normalized = image.startsWith('/') ? image : `/${image}`;
+  return withVersion(`${siteUrl}${normalized}`);
+}
+
+export const defaultSocialImage = resolveSocialImage(
+  '/images/photo-1629306262232-1f854b4b0b13.webp'
+);
 
 export function createPageMetadata({
   title,
@@ -24,6 +42,7 @@ export function createPageMetadata({
   image?: string;
 }): Metadata {
   const url = `${siteUrl}${path}`;
+  const socialImage = resolveSocialImage(image);
 
   return {
     title,
@@ -49,7 +68,7 @@ export function createPageMetadata({
       type: 'website',
       images: [
         {
-          url: image,
+          url: socialImage,
           width: 1200,
           height: 630,
           alt: title
@@ -60,7 +79,7 @@ export function createPageMetadata({
       card: 'summary_large_image',
       title,
       description,
-      images: [image]
+      images: [socialImage]
     }
   };
 }
