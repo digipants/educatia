@@ -8,6 +8,7 @@ export default function StudentForm() {
   const [dob, setDob] = useState('');
   const [gender, setGender] = useState('');
   const [grade, setGrade] = useState('');
+  const [institute, setInstitute] = useState('');
   const [parentName, setParentName] = useState('');
   const [parentContact, setParentContact] = useState('');
   const [studentWhatsapp, setStudentWhatsapp] = useState('');
@@ -29,6 +30,7 @@ export default function StudentForm() {
           dob,
           gender,
           classOrGrade: grade,
+          instituteSchoolUniversity: institute,
           parentOrGuardianFullName: parentName,
           parentOrGuardianContactNo: parentContact,
           studentWhatsappNo: studentWhatsapp,
@@ -41,6 +43,7 @@ export default function StudentForm() {
       setDob('');
       setGender('');
       setGrade('');
+      setInstitute('');
       setParentName('');
       setParentContact('');
       setStudentWhatsapp('');
@@ -86,6 +89,13 @@ export default function StudentForm() {
         placeholder="Class / Grade Currently Studying In"
         value={grade}
         onChange={(e) => setGrade(e.target.value)}
+        className="w-full rounded-md border border-slate-200 px-3 py-2"
+      />
+      <input
+        required
+        placeholder="Institute / School / University"
+        value={institute}
+        onChange={(e) => setInstitute(e.target.value)}
         className="w-full rounded-md border border-slate-200 px-3 py-2"
       />
       <input

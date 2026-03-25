@@ -1,72 +1,84 @@
 const albums = [
   {
-    title: 'School Visits',
+    title: "School Visits",
     items: [
       {
-        title: 'STEM demo day',
-        image: 'https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80'
+        title: "STEM demo day",
+        image:
+          "https://images.unsplash.com/photo-1620309732980-a7fd5385b61d?q=80",
       },
       {
-        title: 'Science fair walk-through',
-        image: 'https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80'
+        title: "Science fair walk-through",
+        image:
+          "https://images.unsplash.com/photo-1581929430054-760e30fe5c3b?q=80",
       },
       {
-        title: 'Teacher huddle',
-        image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80'
-      }
-    ]
+        title: "Teacher huddle",
+        image:
+          "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
+      },
+    ],
   },
   {
-    title: 'Online Classes in Action',
+    title: "Online Classes in Action",
     items: [
       {
-        title: 'Live math session',
-        image: 'https://images.unsplash.com/photo-1580894908361-967195033215?auto=format&fit=crop&w=1200&q=80'
+        title: "Live math session",
+        image:
+          "https://icdn.isrgrajan.com/in/2020/04/india-online-class-video-calling.jpg?q=80",
       },
       {
-        title: 'Doubt clearing breakout',
-        image: 'https://images.unsplash.com/photo-1584697964353-4f6c2e06b9af?auto=format&fit=crop&w=1200&q=80'
+        title: "Doubt clearing breakout",
+        image:
+          "https://indiaeducationdiary.in/wp-content/uploads/2020/09/Picture.jpg?q=80",
       },
       {
-        title: 'Parent orientation',
-        image: 'https://images.unsplash.com/photo-1587613864521-9efb0536cdb0?auto=format&fit=crop&w=1200&q=80'
-      }
-    ]
+        title: "Parent orientation",
+        image:
+          "https://media.istockphoto.com/id/804145938/photo/indian-women-using-laptop-at-home.jpg?s=612x612&w=0&k=20&c=ZWOzl4tjcr6hftJsRreKI4s-eKMSN-JfOYCzBqwwhE8=",
+      },
+    ],
   },
   {
-    title: 'Volunteers at Work',
+    title: "Volunteers at Work",
     items: [
       {
-        title: 'Weekend mentors',
-        image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80'
+        title: "Weekend mentors",
+        image:
+          "https://www.pointsoflight.org/wp-content/uploads/2019/05/Naveen-iVolunteer-2.jpg?q=80",
       },
       {
-        title: 'Content sprint',
-        image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=80'
+        title: "Content sprint",
+        image:
+          "https://media.licdn.com/dms/image/v2/D5612AQF57mPG3S6J4g/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1696502015184?e=2147483647&v=beta&t=X-9l3rlA0GX7mQyxDkCRShX0q0F_VVtRYKGldAIjdNI",
       },
       {
-        title: 'Community call',
-        image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80'
-      }
-    ]
+        title: "Community call",
+        image:
+          "https://fonda.asso.fr/sites/default/files/articles/JSW%20Foundation%20Ivolunteer_0.jpg",
+      },
+    ],
   },
   {
-    title: 'Student Participation',
+    title: "Student Participation",
     items: [
       {
-        title: 'Hands-on robotics',
-        image: 'https://images.unsplash.com/photo-1581094794329-c8112c4f3ef5?auto=format&fit=crop&w=1200&q=80'
+        title: "Hands-on robotics",
+        image:
+          "https://images.unsplash.com/photo-1742767069929-0c663150b164?q=80",
       },
       {
-        title: 'Group project showcase',
-        image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80'
+        title: "Group project showcase",
+        image:
+          "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
       },
       {
-        title: 'Presentation day',
-        image: 'https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=1200&q=80'
-      }
-    ]
-  }
+        title: "Presentation day",
+        image:
+          "https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=1200&q=80",
+      },
+    ],
+  },
 ];
 
 export default function GalleryPage() {

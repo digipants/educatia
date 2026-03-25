@@ -1,8 +1,6 @@
 import Image from "next/image";
 import StudentForm from "@/forms/StudentForm";
 import VolunteerForm from "@/forms/VolunteerForm";
-import TeacherForm from "@/forms/TeacherForm";
-import ParentForm from "@/forms/ParentForm";
 
 export default function ContactPage() {
   return (
@@ -23,7 +21,7 @@ export default function ContactPage() {
         </div>
         <div className="relative h-72 overflow-hidden rounded-2xl shadow-lg">
           <Image
-            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80"
+            src="https://plus.unsplash.com/premium_photo-1682098120982-6d2bb64f64a8?q=80"
             alt="Students and mentor in session"
             fill
             className="object-cover"
@@ -59,8 +57,6 @@ export default function ContactPage() {
       <section className="grid gap-6 md:grid-cols-2">
         <StudentForm />
         <VolunteerForm />
-        <TeacherForm />
-        <ParentForm />
       </section>
     </div>
   );

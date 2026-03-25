@@ -23,6 +23,7 @@ const roles: Record<
       { name: 'dob', placeholder: 'DOB', type: 'date' },
       { name: 'gender', placeholder: 'Gender', options: ['Male', 'Female', 'Other'] },
       { name: 'classOrGrade', placeholder: 'Class / Grade Currently Studying In' },
+      { name: 'instituteSchoolUniversity', placeholder: 'Institute / School / University' },
       { name: 'parentOrGuardianFullName', placeholder: 'Parent / Guardian Full Name' },
       { name: 'parentOrGuardianContactNo', placeholder: 'Parent / Guardian Contact No', type: 'tel' },
       { name: 'studentWhatsappNo', placeholder: 'Whatsapp No. of Student', type: 'tel' },

@@ -7,11 +7,16 @@ export default function SkillDevelopmentPage() {
     <div className="container py-12 space-y-10">
       <section className="grid gap-6 md:grid-cols-2 items-center">
         <div className="space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-wide text-sky-700">Skill Development</p>
-          <h1 className="text-4xl font-bold text-slate-900">Practical skills that lead to livelihoods</h1>
+          <p className="text-sm font-semibold uppercase tracking-wide text-sky-700">
+            Skill Development
+          </p>
+          <h1 className="text-4xl font-bold text-slate-900">
+            Practical skills that lead to livelihoods
+          </h1>
           <p className="text-slate-700 leading-relaxed">
-            Skill Development programs are practical and employment-oriented. They focus on hands-on learning,
-            self-reliance, and career readiness so learners can secure jobs, start ventures, and contribute to
+            Skill Development programs are practical and employment-oriented.
+            They focus on hands-on learning, self-reliance, and career readiness
+            so learners can secure jobs, start ventures, and contribute to
             long-term community growth.
           </p>
         </div>
@@ -39,9 +44,14 @@ export default function SkillDevelopmentPage() {
               />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">{program.title}</h2>
+              <h2 className="text-lg font-semibold text-slate-900">
+                {program.title}
+              </h2>
               <p className="mt-1 text-sm text-slate-700">{program.highlight}</p>
-              <Link href={`/skill-development/${program.slug}`} className="mt-2 inline-flex text-sm font-semibold text-sky-700 hover:underline">
+              <Link
+                href={`/skill-development/${program.slug}`}
+                className="mt-2 inline-flex text-sm font-semibold text-sky-700 hover:underline"
+              >
                 View details
               </Link>
             </div>
@@ -53,12 +63,13 @@ export default function SkillDevelopmentPage() {
         <h2 className="text-xl font-semibold">Expected outcome</h2>
         <div className="grid gap-4 md:grid-cols-2 items-center">
           <p className="text-sm text-slate-700">
-            Improved employability, stronger technical and professional confidence, and higher potential for
-            self-employment and financial stability.
+            Improved employability, stronger technical and professional
+            confidence, and higher potential for self-employment and financial
+            stability.
           </p>
           <div className="relative h-44 overflow-hidden rounded-xl">
             <Image
-              src="https://images.unsplash.com/photo-1584697964154-ff8235f6b0c4?auto=format&fit=crop&w=1200&q=80"
+              src="https://plus.unsplash.com/premium_photo-1733342561505-306871f4e706?w=900&auto=format&fit=crop&q=80"
               alt="Learners using computers"
               fill
               className="object-cover"
@@ -72,7 +83,11 @@ export default function SkillDevelopmentPage() {
         <h2 className="text-xl font-semibold">All Courses</h2>
         <div className="grid gap-3 md:grid-cols-2">
           {skillDevelopmentSubcategories.map((item) => (
-            <Link key={item.slug} href={`/skill-development/${item.slug}`} className="rounded-lg border border-slate-200 p-3 text-sm hover:border-sky-300 hover:bg-sky-50 transition">
+            <Link
+              key={item.slug}
+              href={`/skill-development/${item.slug}`}
+              className="rounded-lg border border-slate-200 p-3 text-sm hover:border-sky-300 hover:bg-sky-50 transition"
+            >
               {item.title}
             </Link>
           ))}
