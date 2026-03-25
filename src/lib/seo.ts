@@ -8,8 +8,7 @@ export const defaultTitle =
   'Educatia Welfare Trust | Free Education, Soft Skills and Skill Development';
 export const defaultDescription =
   'Educatia Welfare Trust provides free academic support, spoken English, soft skills and practical skill development programs for learners from underserved communities.';
-export const defaultSocialImage =
-  'https://images.unsplash.com/photo-1588072432836-e10032774350?auto=format&fit=crop&w=1200&q=80';
+export const defaultSocialImage = "images/photo-1629306262232-1f854b4b0b13.webp";
 
 export function createPageMetadata({
   title,
