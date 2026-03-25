@@ -36,6 +36,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/'
   },
+  icons: {
+    icon: '/images/fav.ico',
+    shortcut: '/images/fav.ico',
+    apple: '/images/fav.ico'
+  },
   openGraph: {
     title: defaultTitle,
     description: defaultDescription,
