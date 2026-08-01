@@ -55,7 +55,7 @@ const links = [
 
 export default function SocialBar() {
   return (
-    <aside className="fixed right-2 top-1/2 z-40 -translate-y-1/2 sm:right-3 md:right-4">
+    <aside className="animate-fade-left fixed right-2 top-1/2 z-40 -translate-y-1/2 sm:right-3 md:right-4">
       <div className="liquid-glass rounded-[24px] p-1.5 sm:rounded-[28px] sm:p-2">
         <div className="flex flex-col gap-1.5 sm:gap-2">
           {links.map((link) => (

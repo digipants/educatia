@@ -31,7 +31,7 @@ export default function SkillDevelopmentSubcategoryPage({ params }: { params: { 
   const related = skillDevelopmentSubcategories.filter((item) => item.slug !== current.slug);
 
   return (
-    <div className="container py-12 space-y-8">
+    <div className="page-shell container py-12 space-y-8">
       <section className="grid gap-6 md:grid-cols-2 items-center">
         <div className="space-y-3">
           <p className="text-sm font-semibold uppercase tracking-wide text-sky-700">Skill Development Subcategory</p>

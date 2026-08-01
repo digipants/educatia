@@ -78,7 +78,7 @@ export default function BecomeMemberPage() {
   };
 
   return (
-    <div className="container py-12 space-y-8">
+    <div className="page-shell container py-12 space-y-8">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Become a Member</h1>
         <p className="text-slate-700">
@@ -90,6 +90,7 @@ export default function BecomeMemberPage() {
         {(Object.keys(roles) as RoleKey[]).map((key) => (
           <button
             key={key}
+            type="button"
             onClick={() => setRole(key)}
             className={`card text-left space-y-1 transition ${
               role === key ? 'ring-2 ring-brand-primary shadow' : 'hover:shadow'
@@ -101,7 +102,7 @@ export default function BecomeMemberPage() {
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="card space-y-4">
+      <form key={role} onSubmit={handleSubmit} className="card space-y-4">
         <div className="space-y-1">
           <p className="text-sm font-semibold text-slate-900">{current.label} details</p>
           <p className="text-xs text-slate-600">Required fields to process your application.</p>

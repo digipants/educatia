@@ -64,7 +64,7 @@ const highlights = [
 
 export default function Home() {
   return (
-    <div className="space-y-16 pb-4">
+    <div className="page-shell space-y-16 pb-4">
       <Hero />
 
       <section className="container grid gap-4 md:grid-cols-3">

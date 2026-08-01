@@ -29,7 +29,7 @@ export default function AcademicsSubcategoryPage({ params }: { params: { slug: s
   if (!current) notFound();
 
   return (
-    <div className="container py-12 space-y-8">
+    <div className="page-shell container py-12 space-y-8">
       <section className="grid gap-6 md:grid-cols-2 items-center">
         <div className="space-y-3">
           <p className="text-sm font-semibold uppercase tracking-wide text-sky-700">Academics Subcategory</p>

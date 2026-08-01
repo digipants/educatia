@@ -94,7 +94,7 @@ const sections = [
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="container py-12 space-y-8">
+    <div className="page-shell container py-12 space-y-8">
       <section className="space-y-3">
         <h1 className="text-3xl font-bold text-slate-900">Privacy Policy</h1>
         <p className="text-slate-700 leading-relaxed">

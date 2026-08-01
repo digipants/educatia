@@ -27,7 +27,7 @@ export default function GalleryGrid() {
       {items.map((item) => (
         <figure
           key={item.title}
-          className="relative rounded-lg overflow-hidden bg-slate-200 aspect-square shadow"
+          className="animate-fade-up relative aspect-square overflow-hidden rounded-lg bg-slate-200 shadow"
           style={{
             backgroundImage: `url(${item.image})`,
             backgroundSize: 'cover',

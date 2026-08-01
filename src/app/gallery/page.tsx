@@ -93,7 +93,7 @@ const albums = [
 
 export default function GalleryPage() {
   return (
-    <div className="container py-12 space-y-10">
+    <div className="page-shell container py-12 space-y-10">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Gallery</h1>
         <p className="text-slate-700">Visual proof from classrooms, live sessions, volunteers, and student showcases.</p>

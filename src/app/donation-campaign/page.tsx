@@ -63,7 +63,7 @@ export default function DonationCampaignPage() {
   };
 
   return (
-    <div className="container py-12 space-y-8">
+    <div className="page-shell container py-12 space-y-8">
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2 space-y-4">
           <h1 className="text-3xl font-bold">{goal.title}</h1>

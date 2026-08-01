@@ -36,7 +36,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 px-2 pt-2 sm:px-3">
+    <header className="animate-fade-down sticky top-0 z-50 px-2 pt-2 sm:px-3">
       <div className="container liquid-glass rounded-[24px] flex items-center justify-between px-4 py-3 sm:px-5">
         <Link href="/" className="flex items-center gap-3 font-semibold text-slate-900">
           <Image
@@ -62,7 +62,7 @@ export default function Navbar() {
                   {link.label}
                   <span className="text-xs">v</span>
                 </Link>
-                <div className="absolute left-0 top-full z-50 pt-2 hidden group-hover:block group-focus-within:block">
+                <div className="absolute left-0 top-full z-50 hidden pt-2 group-hover:block group-focus-within:block">
                   <div className="liquid-glass-soft w-52 rounded-2xl p-2">
                     {programLinks.map((item) => (
                       <Link
@@ -106,7 +106,7 @@ export default function Navbar() {
       </div>
 
       {isMobileOpen ? (
-        <div className="md:hidden px-2 pt-2 sm:px-3">
+        <div className="animate-fade-up md:hidden px-2 pt-2 sm:px-3">
           <nav className="container liquid-glass-soft rounded-[24px] py-3 space-y-1 text-sm font-medium text-slate-700">
             <Link
               href="/"

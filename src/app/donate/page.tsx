@@ -34,7 +34,7 @@ export default function DonatePage() {
   };
 
   return (
-    <div className="container py-12 space-y-6">
+    <div className="page-shell container py-12 space-y-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Donate</h1>
         <p className="text-slate-700">

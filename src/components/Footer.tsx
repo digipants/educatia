@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-200 bg-white py-8">
+    <footer className="animate-fade-up border-t border-slate-200 bg-white py-8">
       <div className="container grid gap-6 text-sm text-slate-600 md:grid-cols-3">
         <div>
           <p className="font-semibold text-slate-800">Educatia Welfare Trust</p>

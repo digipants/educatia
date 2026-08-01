@@ -9,6 +9,8 @@
   --glass-bg: rgba(255, 255, 255, 0.28);
   --glass-border: rgba(255, 255, 255, 0.5);
   --glass-shadow: 0 20px 60px rgba(15, 23, 42, 0.14);
+  --motion-duration: 720ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 body {
@@ -29,10 +31,19 @@ a {
 
 .btn {
   @apply inline-flex items-center justify-center rounded-md bg-brand-primary text-white px-4 py-2 font-medium shadow hover:bg-sky-600 transition;
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease,
+    color 220ms ease;
 }
 
 .card {
   @apply bg-white border border-slate-100 rounded-xl shadow-sm p-6;
+  transition:
+    transform 260ms ease,
+    box-shadow 260ms ease,
+    border-color 260ms ease;
 }
 
 .liquid-glass {
@@ -53,4 +64,186 @@ a {
   box-shadow: 0 14px 36px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.52);
   backdrop-filter: blur(18px) saturate(145%);
   -webkit-backdrop-filter: blur(18px) saturate(145%);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 30px rgba(14, 116, 144, 0.16);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 40px rgba(15, 23, 42, 0.1);
+  border-color: rgba(125, 211, 252, 0.35);
+}
+
+.card img,
+.card [style*='background-image'] {
+  transition: transform 500ms var(--motion-ease), filter 500ms ease;
+}
+
+.card:hover img,
+.card:hover [style*='background-image'] {
+  transform: scale(1.04);
+}
+
+.page-shell > * {
+  opacity: 0;
+  transform: translateY(28px);
+  animation: fade-up var(--motion-duration) var(--motion-ease) forwards;
+}
+
+.page-shell > *:nth-child(1) {
+  animation-delay: 80ms;
+}
+
+.page-shell > *:nth-child(2) {
+  animation-delay: 160ms;
+}
+
+.page-shell > *:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.page-shell > *:nth-child(4) {
+  animation-delay: 320ms;
+}
+
+.page-shell > *:nth-child(5) {
+  animation-delay: 400ms;
+}
+
+.page-shell > *:nth-child(n + 6) {
+  animation-delay: 480ms;
+}
+
+.animate-fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: fade-up var(--motion-duration) var(--motion-ease) forwards;
+}
+
+.animate-fade-down {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fade-down 640ms var(--motion-ease) forwards;
+}
+
+.animate-fade-right {
+  opacity: 0;
+  transform: translateX(-24px);
+  animation: fade-right var(--motion-duration) var(--motion-ease) forwards;
+}
+
+.animate-fade-left {
+  opacity: 0;
+  transform: translateX(24px);
+  animation: fade-left var(--motion-duration) var(--motion-ease) forwards;
+}
+
+.animate-zoom-in {
+  opacity: 0;
+  transform: scale(0.94);
+  animation: zoom-in 780ms var(--motion-ease) forwards;
+}
+
+.motion-delay-1 {
+  animation-delay: 100ms;
+}
+
+.motion-delay-2 {
+  animation-delay: 180ms;
+}
+
+.motion-delay-3 {
+  animation-delay: 260ms;
+}
+
+.motion-delay-4 {
+  animation-delay: 340ms;
+}
+
+.motion-delay-5 {
+  animation-delay: 420ms;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-right {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-left {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .page-shell > *,
+  .animate-fade-up,
+  .animate-fade-down,
+  .animate-fade-right,
+  .animate-fade-left,
+  .animate-zoom-in {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

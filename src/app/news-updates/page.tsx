@@ -78,7 +78,7 @@ const typeStyles: Record<Post['type'], string> = {
 
 export default function NewsUpdatesPage() {
   return (
-    <div className="container py-12 space-y-6">
+    <div className="page-shell container py-12 space-y-6">
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">News & Updates</h1>
         <p className="text-slate-700">Recent activity that matters to donors, schools, and families.</p>

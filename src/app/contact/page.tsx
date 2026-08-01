@@ -15,7 +15,7 @@ export const metadata = createPageMetadata({
 
 export default function ContactPage() {
   return (
-    <div className="container py-12 space-y-10">
+    <div className="page-shell container py-12 space-y-10">
       <section className="grid gap-6 md:grid-cols-2 items-center">
         <div className="space-y-3">
           <p className="text-sm font-semibold uppercase tracking-wide text-sky-700">
