@@ -9,8 +9,9 @@ export function generateStaticParams() {
   return academicsSubcategories.map((item) => ({ slug: item.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const current = findSubcategory(academicsSubcategories, params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const current = findSubcategory(academicsSubcategories, slug);
   if (!current) {
     return {};
   }
@@ -24,8 +25,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   });
 }
 
-export default function AcademicsSubcategoryPage({ params }: { params: { slug: string } }) {
-  const current = findSubcategory(academicsSubcategories, params.slug);
+export default async function AcademicsSubcategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const current = findSubcategory(academicsSubcategories, slug);
   if (!current) notFound();
 
   return (

@@ -9,8 +9,9 @@ export function generateStaticParams() {
   return skillDevelopmentSubcategories.map((item) => ({ slug: item.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const current = findSubcategory(skillDevelopmentSubcategories, params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const current = findSubcategory(skillDevelopmentSubcategories, slug);
   if (!current) {
     return {};
   }
@@ -24,8 +25,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   });
 }
 
-export default function SkillDevelopmentSubcategoryPage({ params }: { params: { slug: string } }) {
-  const current = findSubcategory(skillDevelopmentSubcategories, params.slug);
+export default async function SkillDevelopmentSubcategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const current = findSubcategory(skillDevelopmentSubcategories, slug);
   if (!current) notFound();
 
   const related = skillDevelopmentSubcategories.filter((item) => item.slug !== current.slug);
