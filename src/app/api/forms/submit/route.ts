@@ -63,13 +63,17 @@ function asHtml(payload: SubmissionPayload) {
 
 export async function POST(request: Request) {
   try {
+    const contentLength = Number(request.headers.get('content-length') || 0);
+    if (contentLength > 16384) {
+      return NextResponse.json({ error: 'Submission too large' }, { status: 413 });
+    }
     const payload = (await request.json()) as SubmissionPayload;
 
     const valid = payload && typeof payload === 'object' &&
       typeof payload.formType === 'string' &&
       ['Student', 'Volunteer', 'Parent', 'Teacher'].includes(payload.formType) &&
       typeof payload.source === 'string' &&
-      payload.source.length > 0 && payload.source.length <= 100 &&
+      ['Contact Page', 'Become a Member'].includes(payload.source) &&
       payload.data && typeof payload.data === 'object' && !Array.isArray(payload.data) &&
       Object.keys(payload.data).length > 0 && Object.keys(payload.data).length <= 25 &&
       Object.entries(payload.data).every(([key, value]) =>
