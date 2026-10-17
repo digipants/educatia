@@ -1,3 +1,5 @@
+import type { ApplicationStatus } from './applicationStatus';
+
 export type FormType = 'Student' | 'Volunteer' | 'Parent' | 'Teacher';
 export type FormSource = 'Contact Page' | 'Become a Member';
 
@@ -12,9 +14,13 @@ export type ApplicationRecord = {
   formType: 'Student' | 'Volunteer';
   source: FormSource;
   data: Record<string, string | boolean>;
-  status: 'New';
+  status: ApplicationStatus;
   createdAt: Date;
   updatedAt: Date;
+  statusUpdatedBy?: string;
+  statusUpdatedAt?: Date;
+  statusRevision?: string;
+  lastStatusMutationId?: string;
 };
 
 export class SubmissionValidationError extends Error {}

@@ -81,6 +81,14 @@ export async function readAsAdministrator<T>(
   email: unknown,
   read: () => Promise<T>
 ): Promise<AdminReadResult<T>> {
+  return runAsAdministrator(configuration, email, read);
+}
+
+export async function runAsAdministrator<T>(
+  configuration: AdminConfiguration,
+  email: unknown,
+  operation: () => Promise<T>
+): Promise<AdminReadResult<T>> {
   if (!configuration.enabled) return { status: 'unavailable' };
   if (typeof email !== 'string' || !email.trim()) return { status: 'unauthenticated' };
   if (!isAllowedAdministrator(email, configuration.administratorEmails)) {
@@ -88,7 +96,7 @@ export async function readAsAdministrator<T>(
   }
 
   try {
-    return { status: 'ok', value: await read() };
+    return { status: 'ok', value: await operation() };
   } catch {
     return { status: 'error' };
   }
