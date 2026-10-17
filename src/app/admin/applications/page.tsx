@@ -75,6 +75,7 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
             <span className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-500">
               <span>Source: {application.source}</span>
               <span>Status: {application.status}</span>
+              <span>Assigned to: {application.assignedTo ?? 'Unassigned'}</span>
             </span>
           </Link>
         )) : (
