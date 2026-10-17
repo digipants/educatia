@@ -63,15 +63,33 @@ function asHtml(payload: SubmissionPayload) {
 
 export async function POST(request: Request) {
   try {
+    const contentLength = Number(request.headers.get('content-length') || 0);
+    if (contentLength > 16384) {
+      return NextResponse.json({ error: 'Submission too large' }, { status: 413 });
+    }
     const payload = (await request.json()) as SubmissionPayload;
 
-    if (!payload.formType || !payload.source || !payload.data || Object.keys(payload.data).length === 0) {
+    const valid = payload && typeof payload === 'object' &&
+      typeof payload.formType === 'string' &&
+      ['Student', 'Volunteer', 'Parent', 'Teacher'].includes(payload.formType) &&
+      typeof payload.source === 'string' &&
+      ['Contact Page', 'Become a Member'].includes(payload.source) &&
+      payload.data && typeof payload.data === 'object' && !Array.isArray(payload.data) &&
+      Object.keys(payload.data).length > 0 && Object.keys(payload.data).length <= 25 &&
+      Object.entries(payload.data).every(([key, value]) =>
+        key.length > 0 && key.length <= 80 &&
+        typeof value === 'string' && value.length <= 2000
+      );
+    if (!valid) {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
     }
 
     const transporter = createTransporter();
     const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@educatiawelfaretrust.org';
-    const replyTo = payload.data.email || payload.data.emailId || process.env.SMTP_USER;
+    const submittedEmail = payload.data.email || payload.data.emailId || '';
+    const replyTo = /^[^\s@\r\n]+@[^\s@\r\n]+\.[^\s@\r\n]+$/.test(submittedEmail)
+      ? submittedEmail
+      : process.env.SMTP_USER;
 
     await transporter.sendMail({
       from,
