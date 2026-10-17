@@ -11,3 +11,9 @@ The guardian checkbox records an acknowledgment that the information may be used
 No automatic deletion or TTL policy is implemented. Records remain in MongoDB until an authorized database operator deletes them. The trust must establish and document an appropriate retention period before enabling storage. Application values are not written to server logs; operational errors use generic messages.
 
 An idempotency key is generated for Student and Volunteer submissions and stored as the MongoDB document ID. Retries in the same page session reuse the key, preventing duplicate records and duplicate email notifications. A retry after a page reload receives a new key, so a lost response followed by a reload can still create a duplicate application.
+
+## Read-only administrator inbox
+
+The `/admin/applications` inbox is disabled unless `ADMIN_APPLICATIONS_ENABLED=true`, `APPLICATION_STORAGE_ENABLED=true`, MongoDB, Google OAuth, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, and a server-only `ADMIN_EMAILS` allowlist are all configured. Google sign-in must return a provider-verified email, and the exact normalized email must match an allowlisted address. The allowlist is comma-separated and must never use a `NEXT_PUBLIC_` variable. All inbox and detail reads are authorized on the server before MongoDB is queried; pages are dynamic, non-indexable, and not cached. The inbox is read-only and displays only the fields saved by the application persistence layer.
+
+Keep both feature flags false until the trust has separately approved the privacy/retention policy, consent handling, administrator access, backups, and operating procedures. Configuring OAuth or the inbox does not authorize collection of children's information. No credentials should be committed to this repository.
