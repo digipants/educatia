@@ -40,10 +40,6 @@ export default function Hero() {
               priority
             />
           </div>
-          <div className="animate-zoom-in motion-delay-4 absolute -bottom-6 -left-6 max-w-xs rounded-xl bg-white p-4 text-sm shadow-md">
-            "Students are performing well with Educatia kits." — Avinash
-            Patel, Teacher
-          </div>
         </div>
       </div>
     </section>
