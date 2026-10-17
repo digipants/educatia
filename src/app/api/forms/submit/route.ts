@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     const transporter = createTransporter();
     const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@educatiawelfaretrust.org';
     const submittedEmail = payload.data.email || payload.data.emailId || '';
-    const replyTo = /^[^\\s@\\r\\n]+@[^\\s@\\r\\n]+\\.[^\\s@\\r\\n]+$/.test(submittedEmail)
+    const replyTo = /^[^\s@\r\n]+@[^\s@\r\n]+\.[^\s@\r\n]+$/.test(submittedEmail)
       ? submittedEmail
       : process.env.SMTP_USER;
 
