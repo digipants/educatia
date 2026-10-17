@@ -1,6 +1,7 @@
 import 'server-only';
 import { getServerSession } from 'next-auth';
 import type { ApplicationRecord } from './applicationSubmission';
+import { isApplicationStatus, type ApplicationStatus } from './applicationStatus';
 import { getAdminConfiguration, isValidApplicationId, parseApplicationPagination, readAsAdministrator } from './adminSecurity';
 import { authOptions } from './auth';
 import { getDb } from './server';
@@ -11,12 +12,15 @@ export type ApplicationSummary = {
   name: string;
   submittedAt: string | null;
   source: string;
-  status: string;
+  status: ApplicationStatus | 'Unknown';
 };
 
 export type ApplicationDetail = ApplicationSummary & {
+  revision: string | null;
   fields: Array<{ label: string; value: string }>;
 };
+
+const statusRevisionPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function dateValue(value: Date) {
   return value instanceof Date && Number.isFinite(value.valueOf()) ? value.toISOString() : null;
@@ -29,7 +33,7 @@ function summary(record: ApplicationRecord): ApplicationSummary {
     name: typeof record.data.fullName === 'string' ? record.data.fullName.slice(0, 120) : 'Unnamed application',
     submittedAt: dateValue(record.createdAt),
     source: record.source === 'Contact Page' || record.source === 'Become a Member' ? record.source : 'Unknown',
-    status: record.status === 'New' ? record.status : 'Unknown'
+    status: isApplicationStatus(record.status) ? record.status : 'Unknown'
   };
 }
 
@@ -61,7 +65,12 @@ function details(record: ApplicationRecord): ApplicationDetail {
     }
     return [];
   });
-  return { ...summary(record), fields };
+  const revision = record.statusRevision === undefined
+    ? dateValue(record.updatedAt)
+    : typeof record.statusRevision === 'string' && statusRevisionPattern.test(record.statusRevision)
+      ? record.statusRevision
+      : null;
+  return { ...summary(record), revision, fields };
 }
 
 async function withAdminRead<T>(read: () => Promise<T>) {
@@ -124,6 +133,8 @@ export async function getAdminApplication(id: string) {
       source: 1,
       status: 1,
       createdAt: 1,
+      updatedAt: 1,
+      statusRevision: 1,
       'data.fullName': 1,
       'data.classOrGrade': 1,
       'data.instituteSchoolUniversity': 1,

@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { randomUUID } from 'node:crypto';
 import { AdminAuthButton } from '../AdminAuthButton';
+import { updateAdminApplicationStatus } from './actions';
+import { APPLICATION_STATUSES, isApplicationStatus } from '@/lib/applicationStatus';
 import { getAdminApplication } from '@/lib/adminApplicationInbox';
 
 export const dynamic = 'force-dynamic';
@@ -17,8 +20,11 @@ function formatDate(value: string | null) {
     .format(new Date(value));
 }
 
-export default async function ApplicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function ApplicationDetailPage({ params, searchParams }: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ update?: string | string[] }>;
+}) {
+  const [{ id }, query] = await Promise.all([params, searchParams]);
   const result = await getAdminApplication(id);
   if (result.status !== 'ok') {
     return (
@@ -50,6 +56,7 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
   }
 
   const application = result.value.application;
+  const updateResult = typeof query.update === 'string' ? query.update : '';
   return (
     <main className="container page-shell py-10 sm:py-16">
       <section className="card mx-auto max-w-3xl">
@@ -66,6 +73,24 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
           <div><dt className="text-xs uppercase tracking-wide text-slate-500">Source</dt><dd className="mt-1 text-sm font-medium">{application.source}</dd></div>
           <div><dt className="text-xs uppercase tracking-wide text-slate-500">Status</dt><dd className="mt-1 text-sm font-medium">{application.status}</dd></div>
         </dl>
+        {updateResult === 'saved' ? <p role="status" className="mt-5 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">Status saved.</p> : null}
+        {updateResult === 'stale' ? <p role="alert" className="mt-5 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">This application changed after this page loaded. Review the current status before trying again.</p> : null}
+        {updateResult === 'error' ? <p role="alert" className="mt-5 rounded-lg bg-rose-50 px-4 py-3 text-sm text-rose-800">Unable to update the application status. Please try again.</p> : null}
+        {isApplicationStatus(application.status) && application.revision ? (
+          <form action={updateAdminApplicationStatus} className="mt-6 flex flex-col gap-3 rounded-xl bg-slate-50 p-4 sm:flex-row sm:items-end">
+            <input type="hidden" name="applicationId" value={application.id} />
+            <input type="hidden" name="expectedStatus" value={application.status} />
+            <input type="hidden" name="expectedRevision" value={application.revision} />
+            <input type="hidden" name="mutationId" value={randomUUID()} />
+            <label className="flex-1 space-y-1 text-sm font-medium text-slate-700">
+              <span>Update workflow status</span>
+              <select name="status" defaultValue={application.status} className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900">
+                {APPLICATION_STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}
+              </select>
+            </label>
+            <button type="submit" className="btn">Save status</button>
+          </form>
+        ) : null}
         <dl className="mt-5 divide-y divide-slate-100">
           {application.fields.map(({ label, value }) => (
             <div key={label} className="grid gap-1 py-4 sm:grid-cols-[minmax(12rem,1fr)_2fr] sm:gap-5">
