@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function DonatePage() {
   return (
-    <main className="page-shell container py-12 sm:py-16">
+    <div className="page-shell container py-12 sm:py-16">
       <div className="mx-auto max-w-3xl space-y-6">
         <header className="space-y-3">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-primary">Support students</p>
@@ -16,6 +16,6 @@ export default function DonatePage() {
           <Link href="/contact" className="btn inline-flex">Contact our team</Link>
         </section>
       </div>
-    </main>
+    </div>
   );
 }
