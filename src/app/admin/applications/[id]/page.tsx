@@ -17,8 +17,9 @@ function formatDate(value: string | null) {
     .format(new Date(value));
 }
 
-export default async function ApplicationDetailPage({ params }: { params: { id: string } }) {
-  const result = await getAdminApplication(params.id);
+export default async function ApplicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const result = await getAdminApplication(id);
   if (result.status !== 'ok') {
     return (
       <main className="container page-shell py-16">

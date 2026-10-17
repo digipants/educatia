@@ -9,8 +9,9 @@ export function generateStaticParams() {
   return softSkillsSubcategories.map((item) => ({ slug: item.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const current = findSubcategory(softSkillsSubcategories, params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const current = findSubcategory(softSkillsSubcategories, slug);
   if (!current) {
     return {};
   }
@@ -24,8 +25,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   });
 }
 
-export default function SoftSkillSubcategoryPage({ params }: { params: { slug: string } }) {
-  const current = findSubcategory(softSkillsSubcategories, params.slug);
+export default async function SoftSkillSubcategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const current = findSubcategory(softSkillsSubcategories, slug);
   if (!current) notFound();
 
   const related = softSkillsSubcategories.filter((item) => item.slug !== current.slug);

@@ -39,8 +39,8 @@ function formatDate(value: string | null) {
     .format(new Date(value));
 }
 
-export default async function ApplicationsPage({ searchParams = {} }: { searchParams?: SearchParams }) {
-  const result = await listAdminApplications(searchParams);
+export default async function ApplicationsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const result = await listAdminApplications(await searchParams);
   if (result.status !== 'ok') return <main className="container page-shell py-16"><AccessState status={result.status} /></main>;
   if (result.value.kind === 'invalid-pagination') {
     return <main className="container page-shell py-16"><AccessState status="error" /></main>;
