@@ -185,16 +185,16 @@ export default function Home() {
             />
           </div>
           <div className="space-y-3 p-6">
-            <h2 className="text-xl font-semibold">Current Campaign</h2>
+            <h2 className="text-xl font-semibold">Support Our Programs</h2>
             <p className="text-sm text-slate-700">
-              Sponsor 1,000 students for one year by funding devices, learning
-              access, and guided support.
+              Explore ways to support students through learning resources,
+              access, and guided academic programs.
             </p>
             <Link
               href="/donation-campaign"
               className="btn w-full md:w-auto text-center"
             >
-              View Donation Campaign
+              Explore Sponsorship
             </Link>
           </div>
         </article>
