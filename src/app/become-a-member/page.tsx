@@ -28,7 +28,12 @@ const roles: Record<
       { name: 'parentOrGuardianContactNo', placeholder: 'Parent / Guardian Contact No', type: 'tel' },
       { name: 'studentWhatsappNo', placeholder: 'Whatsapp No. of Student/Parent', type: 'tel' },
       { name: 'emailId', placeholder: 'Email ID', type: 'email' },
-      { name: 'program', placeholder: 'Program', options: ['Academics', 'Spoken English'] }
+      { name: 'program', placeholder: 'Program', options: ['Academics', 'Spoken English'] },
+      {
+        name: 'parentGuardianConsent',
+        placeholder: 'I confirm that I am the student’s parent or guardian and consent to Educatia Welfare Trust using these details to review and respond to this application. See the Privacy Policy for information handling.',
+        type: 'checkbox'
+      }
     ]
   },
   volunteer: {
@@ -82,7 +87,9 @@ export default function BecomeMemberPage() {
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Become a Member</h1>
         <p className="text-slate-700">
-          Choose the role that fits you best. All submissions feed into our central CRM for quick follow-up.
+          Choose the role that fits you best. Applications are sent to the trust
+          by email; student and volunteer applications are also stored only when
+          application storage has been explicitly enabled.
         </p>
       </div>
 
@@ -91,7 +98,11 @@ export default function BecomeMemberPage() {
           <button
             key={key}
             type="button"
-            onClick={() => setRole(key)}
+            onClick={() => {
+              setRole(key);
+              setForm({});
+              setStatus('');
+            }}
             className={`card text-left space-y-1 transition ${
               role === key ? 'ring-2 ring-brand-primary shadow' : 'hover:shadow'
             }`}
@@ -124,6 +135,17 @@ export default function BecomeMemberPage() {
                   </option>
                 ))}
               </select>
+            ) : field.type === 'checkbox' ? (
+              <label key={field.name} className="flex items-start gap-3 text-sm text-slate-700 md:col-span-2">
+                <input
+                  required
+                  type="checkbox"
+                  checked={form[field.name] === 'true'}
+                  onChange={(e) => updateField(field.name, String(e.target.checked))}
+                  className="mt-1"
+                />
+                <span>{field.placeholder}</span>
+              </label>
             ) : (
               <input
                 key={field.name}

@@ -14,6 +14,7 @@ export default function StudentForm() {
   const [studentWhatsapp, setStudentWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [program, setProgram] = useState('');
+  const [parentGuardianConsent, setParentGuardianConsent] = useState(false);
   const [status, setStatus] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +36,8 @@ export default function StudentForm() {
           parentOrGuardianContactNo: parentContact,
           studentWhatsappNo: studentWhatsapp,
           emailId: email,
-          program
+          program,
+          parentGuardianConsent: String(parentGuardianConsent)
         }
       });
       setStatus('Submitted successfully. We will contact you shortly.');
@@ -49,6 +51,7 @@ export default function StudentForm() {
       setStudentWhatsapp('');
       setEmail('');
       setProgram('');
+      setParentGuardianConsent(false);
     } catch (error: any) {
       setStatus(error?.message || 'Submission failed. Please try again.');
     } finally {
@@ -139,6 +142,20 @@ export default function StudentForm() {
         <option value="Academics">Academics</option>
         <option value="Spoken English">Spoken English</option>
       </select>
+      <label className="flex items-start gap-3 text-sm text-slate-700 md:col-span-2">
+        <input
+          required
+          type="checkbox"
+          checked={parentGuardianConsent}
+          onChange={(e) => setParentGuardianConsent(e.target.checked)}
+          className="mt-1"
+        />
+        <span>
+          I confirm that I am the student&apos;s parent or guardian and consent to
+          Educatia Welfare Trust using these details to review and respond to
+          this application. See our Privacy Policy for information handling.
+        </span>
+      </label>
       <button type="submit" className="btn w-full" disabled={loading}>
         {loading ? 'Submitting...' : 'Submit'}
       </button>
