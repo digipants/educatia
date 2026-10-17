@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { saveApplication } from '@/lib/applicationStore';
+import {
+  IdempotencyConflictError,
+  processSubmission,
+  SubmissionValidationError,
+  type SubmissionPayload
+} from '@/lib/applicationSubmission';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-type SubmissionPayload = {
-  formType: string;
-  source: string;
-  data: Record<string, string>;
-};
 
 const recipient = 'educatiawelfaretrust@gmail.com';
 
@@ -62,47 +63,62 @@ function asHtml(payload: SubmissionPayload) {
 }
 
 export async function POST(request: Request) {
+  let isStoredApplication = false;
+
   try {
     const contentLength = Number(request.headers.get('content-length') || 0);
     if (contentLength > 16384) {
       return NextResponse.json({ error: 'Submission too large' }, { status: 413 });
     }
-    const payload = (await request.json()) as SubmissionPayload;
 
-    const valid = payload && typeof payload === 'object' &&
-      typeof payload.formType === 'string' &&
-      ['Student', 'Volunteer', 'Parent', 'Teacher'].includes(payload.formType) &&
-      typeof payload.source === 'string' &&
-      ['Contact Page', 'Become a Member'].includes(payload.source) &&
-      payload.data && typeof payload.data === 'object' && !Array.isArray(payload.data) &&
-      Object.keys(payload.data).length > 0 && Object.keys(payload.data).length <= 25 &&
-      Object.entries(payload.data).every(([key, value]) =>
-        key.length > 0 && key.length <= 80 &&
-        typeof value === 'string' && value.length <= 2000
-      );
-    if (!valid) {
-      return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
-    }
+    const payload: unknown = await request.json();
+    const storageEnabled = process.env.APPLICATION_STORAGE_ENABLED === 'true';
+    const candidate = payload as Partial<SubmissionPayload> | null;
+    isStoredApplication = Boolean(
+      storageEnabled && candidate &&
+      (candidate.formType === 'Student' || candidate.formType === 'Volunteer')
+    );
 
-    const transporter = createTransporter();
-    const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@educatiawelfaretrust.org';
-    const submittedEmail = payload.data.email || payload.data.emailId || '';
-    const replyTo = /^[^\s@\r\n]+@[^\s@\r\n]+\.[^\s@\r\n]+$/.test(submittedEmail)
-      ? submittedEmail
-      : process.env.SMTP_USER;
+    await processSubmission(payload, {
+      storageEnabled,
+      idempotencyKey: request.headers.get('idempotency-key'),
+      saveApplication,
+      sendEmail: async (validatedPayload) => {
+        const transporter = createTransporter();
+        const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@educatiawelfaretrust.org';
+        const submittedEmail = validatedPayload.data.email || validatedPayload.data.emailId || '';
+        const replyTo = /^[^\s@\r\n]+@[^\s@\r\n]+\.[^\s@\r\n]+$/.test(submittedEmail)
+          ? submittedEmail
+          : process.env.SMTP_USER;
 
-    await transporter.sendMail({
-      from,
-      to: recipient,
-      replyTo,
-      subject: `[Educatia] ${payload.source} - ${payload.formType} submission`,
-      text: asText(payload),
-      html: asHtml(payload)
+        await transporter.sendMail({
+          from,
+          to: recipient,
+          replyTo,
+          subject: `[Educatia] ${validatedPayload.source} - ${validatedPayload.formType} submission`,
+          text: asText(validatedPayload),
+          html: asHtml(validatedPayload)
+        });
+      }
     });
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error('Form submission email error', error);
-    return NextResponse.json({ error: 'Unable to submit form right now' }, { status: 500 });
+    if (error instanceof SubmissionValidationError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    if (error instanceof IdempotencyConflictError) {
+      return NextResponse.json({ error: 'Application request conflict' }, { status: 409 });
+    }
+
+    console.error(isStoredApplication ? 'Application persistence failed' : 'Form submission email error');
+    return NextResponse.json(
+      {
+        error: isStoredApplication
+          ? 'Unable to save your application right now. Please try again later.'
+          : 'Unable to submit form right now'
+      },
+      { status: isStoredApplication ? 503 : 500 }
+    );
   }
 }
