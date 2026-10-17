@@ -1,12 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import CampaignProgress from '@/components/CampaignProgress';
-import { createRazorpayOrder } from '@/lib/api';
 import Image from 'next/image';
 
 export default function DonationCampaignPage() {
-  const [loading, setLoading] = useState(false);
 
   const goal = {
     title: 'Sponsor 1,000 Students for 1 Year',
@@ -39,28 +36,6 @@ export default function DonationCampaignPage() {
     ]
   };
 
-  const handleDonate = async () => {
-    try {
-      setLoading(true);
-      const order = await createRazorpayOrder({ amount: 5000, currency: 'INR' });
-      if (!order) return;
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        name: 'Educatia',
-        description: 'Donation',
-        order_id: order.id,
-        handler: (response: any) => {
-          console.log('Payment successful', response);
-        }
-      };
-      const razorpay = new (window as any).Razorpay(options);
-      razorpay.open();
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="page-shell container py-12 space-y-8">
@@ -88,25 +63,20 @@ export default function DonationCampaignPage() {
               This campaign funds devices, data, and live mentoring for students who would otherwise lose an academic year.
               Your support locks in a full year of consistent access—classes, practice, and doubt-solving.
             </p>
-            <div className="flex gap-3">
-              <button className="btn" onClick={handleDonate} disabled={loading}>
-                {loading ? 'Processing…' : 'Donate Now'}
-              </button>
-              <button
-                className="btn bg-white text-slate-900 ring-1 ring-slate-200 hover:bg-slate-50"
-                onClick={handleDonate}
-                disabled={loading}
-              >
-                Sponsor a student (₹12,000)
-              </button>
-            </div>
+            <p className="rounded-lg bg-amber-50 p-4 text-sm text-slate-800">
+              Online donations are temporarily unavailable because Razorpay
+              activation is pending required documents and approval.
+              Please contact the trust for sponsorship enquiries.
+            </p>
           </div>
         </div>
 
         <div className="space-y-4">
+          <p className="text-xs text-slate-600">The progress shown below is illustrative, not a live verified fundraising total.</p>
           <CampaignProgress current={goal.current} target={goal.target} />
           <div className="card space-y-3">
-            <h3 className="text-lg font-semibold">Beneficiaries</h3>
+            <h3 className="text-lg font-semibold">Illustrative learner stories</h3>
+            <p className="text-xs text-slate-600">These examples are not verified beneficiary profiles.</p>
             <div className="space-y-3">
               {goal.beneficiaries.map((b) => (
                 <div key={b.name} className="flex gap-3 items-center">
