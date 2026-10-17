@@ -7,6 +7,7 @@ import {
   APPLICATION_ASSIGNMENT_SUMMARY_PROJECTION,
   currentAllowlistedAssignee
 } from './applicationAssignment';
+import { buildApplicationActivity, type ApplicationActivity } from './applicationActivity';
 import { getAdminConfiguration, isValidApplicationId, parseApplicationPagination, readAsAdministrator } from './adminSecurity';
 import { authOptions } from './auth';
 import { getDb } from './server';
@@ -27,6 +28,7 @@ export type ApplicationDetail = ApplicationSummary & {
   assignedAt: string | null;
   assignedBy: string | null;
   assigneeOptions: string[];
+  activity: ApplicationActivity[];
   fields: Array<{ label: string; value: string }>;
 };
 
@@ -91,6 +93,7 @@ function details(record: ApplicationRecord, administratorEmails: string[]): Appl
     assignedAt: record.assignedAt instanceof Date ? dateValue(record.assignedAt) : null,
     assignedBy: typeof record.assignedBy === 'string' ? record.assignedBy.slice(0, 254) : null,
     assigneeOptions: administratorEmails,
+    activity: buildApplicationActivity(record, administratorEmails),
     fields
   };
 }
@@ -158,6 +161,8 @@ export async function getAdminApplication(id: string) {
       createdAt: 1,
       updatedAt: 1,
       statusRevision: 1,
+      statusUpdatedAt: 1,
+      statusUpdatedBy: 1,
       ...APPLICATION_ASSIGNMENT_DETAIL_PROJECTION,
       'data.fullName': 1,
       'data.classOrGrade': 1,

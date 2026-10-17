@@ -122,6 +122,22 @@ export default async function ApplicationDetailPage({ params, searchParams }: {
             </div>
           ))}
         </dl>
+        <section className="mt-8 border-t border-slate-100 pt-6" aria-labelledby="activity-heading">
+          <h2 id="activity-heading" className="text-xl font-semibold text-slate-900">Recent activity</h2>
+          <p className="mt-2 text-sm text-slate-600">This timeline is derived from submission details and the latest saved status and assignment metadata.</p>
+          <ol className="mt-5 space-y-4">
+            {application.activity.map((item) => (
+              <li key={item.id} className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm font-semibold text-slate-900">{item.message}</p>
+                  <time className="text-xs text-slate-500" dateTime={item.occurredAt}>{formatDate(item.occurredAt)}</time>
+                </div>
+                {item.actor ? <p className="mt-2 text-xs text-slate-500">Recorded by {item.actor}</p> : null}
+              </li>
+            ))}
+            {!application.activity.length ? <li className="text-sm text-slate-500">No activity to display.</li> : null}
+          </ol>
+        </section>
       </section>
     </div>
   );
