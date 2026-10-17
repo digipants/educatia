@@ -1,18 +1,11 @@
 export default function Footer() {
   return (
     <footer className="animate-fade-up border-t border-slate-200 bg-white py-8">
-      <div className="container grid gap-6 text-sm text-slate-600 md:grid-cols-3">
-        <div>
+      <div className="container grid gap-6 text-sm text-slate-600 sm:grid-cols-2">
+        <div className="space-y-2">
           <p className="font-semibold text-slate-800">Educatia Welfare Trust</p>
-          <p>Registered nonprofit | 12A &amp; 80G compliant</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1">
-            ✅ Trusted by schools
-          </span>
-          <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1">
-            🔒 Secure payments
-          </span>
+          <p>Education programs and ways to get involved.</p>
+          <a href="/programs" className="inline-block hover:text-brand-primary">Explore programs</a>
         </div>
         <div className="flex flex-col gap-2 break-all">
           <a

@@ -13,7 +13,7 @@ export default function DonationCard({ title, description, amount }: DonationCar
       <p className="text-slate-700">{description}</p>
       <div className="flex items-center justify-between">
         <p className="text-lg font-bold text-slate-900">₹{amount.toLocaleString('en-IN')}</p>
-        <Link className="btn" href="/donate">Donate</Link>
+        <Link className="btn" href="/donate">Support Us</Link>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import { useState } from 'react';
 const links = [
   { href: '/', label: 'Home' },
   { href: '/programs', label: 'Programs' },
-  { href: '/donation-campaign', label: 'Campaign' },
+  { href: '/donation-campaign', label: 'Support' },
   { href: '/gallery', label: 'Gallery' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' }
@@ -91,7 +91,7 @@ export default function Navbar() {
         </nav>
         <div className="flex items-center gap-2">
           <Link href="/donate" className="hidden md:inline-flex btn text-sm px-3 py-2">
-            Donate
+            Support Us
           </Link>
           <button
             type="button"
@@ -156,7 +156,7 @@ export default function Navbar() {
                 </Link>
               ))}
             <Link href="/donate" onClick={closeMobileMenu} className="btn mt-2 w-full justify-center">
-              Donate
+              Support Us
             </Link>
           </nav>
         </div>
