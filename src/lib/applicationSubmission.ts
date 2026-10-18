@@ -21,6 +21,11 @@ export type ApplicationRecord = {
   statusUpdatedAt?: Date;
   statusRevision?: string;
   lastStatusMutationId?: string;
+  assignedTo?: string | null;
+  assignedAt?: Date | null;
+  assignedBy?: string;
+  assignmentRevision?: string;
+  lastAssignmentMutationId?: string;
 };
 
 export class SubmissionValidationError extends Error {}

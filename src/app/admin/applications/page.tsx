@@ -41,19 +41,19 @@ function formatDate(value: string | null) {
 
 export default async function ApplicationsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const result = await listAdminApplications(await searchParams);
-  if (result.status !== 'ok') return <main className="container page-shell py-16"><AccessState status={result.status} /></main>;
+  if (result.status !== 'ok') return <div className="container page-shell py-16"><AccessState status={result.status} /></div>;
   if (result.value.kind === 'invalid-pagination') {
-    return <main className="container page-shell py-16"><AccessState status="error" /></main>;
+    return <div className="container page-shell py-16"><AccessState status="error" /></div>;
   }
 
   const { items, total, page, pageCount, limit } = result.value;
   return (
-    <main className="container page-shell py-10 sm:py-16">
+    <div className="container page-shell py-10 sm:py-16">
       <section className="card mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-primary">Educatia administration</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-900">Applications inbox</h1>
-          <p className="mt-2 text-sm text-slate-600">{total} application{total === 1 ? '' : 's'} · read-only</p>
+          <p className="mt-2 text-sm text-slate-600">{total} application{total === 1 ? '' : 's'}</p>
         </div>
         <AdminAuthButton action="sign-out" />
       </section>
@@ -75,6 +75,7 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
             <span className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-500">
               <span>Source: {application.source}</span>
               <span>Status: {application.status}</span>
+              <span>Assigned to: {application.assignedTo ?? 'Unassigned'}</span>
             </span>
           </Link>
         )) : (
@@ -87,6 +88,6 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
         <span className="text-sm text-slate-600">Page {page} of {pageCount}</span>
         {page < pageCount ? <Link className="btn" href={`/admin/applications?page=${page + 1}&limit=${limit}`}>Next</Link> : <span />}
       </nav>
-    </main>
+    </div>
   );
 }
