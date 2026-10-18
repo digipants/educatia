@@ -35,6 +35,34 @@ const emailPattern = /^[^\s@\r\n]+@[^\s@\r\n]+\.[^\s@\r\n]+$/;
 const phonePattern = /^\+?[0-9\s().-]{7,24}$/;
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+const inputFields: Record<FormType, readonly string[]> = {
+  Student: ['fullName', 'dob', 'gender', 'classOrGrade', 'instituteSchoolUniversity',
+    'parentOrGuardianFullName', 'parentOrGuardianContactNo', 'studentWhatsappNo',
+    'emailId', 'program', 'parentGuardianConsent'],
+  Volunteer: ['fullName', 'dob', 'gender', 'mobile', 'whatsapp', 'email', 'address',
+    'serviceOrAreaOfExpertise'],
+  Parent: ['fullName', 'studentName', 'interestsOrNeeds'],
+  Teacher: ['fullName', 'schoolOrOrganization', 'supportNeed']
+};
+
+// Email is durable outside MongoDB. Send the minimum needed for first contact.
+const notificationFields: Record<FormType, readonly string[]> = {
+  Student: ['fullName', 'classOrGrade', 'instituteSchoolUniversity',
+    'parentOrGuardianFullName', 'parentOrGuardianContactNo', 'program', 'parentGuardianConsent'],
+  Volunteer: ['fullName', 'mobile', 'whatsapp', 'email', 'serviceOrAreaOfExpertise'],
+  Parent: inputFields.Parent,
+  Teacher: inputFields.Teacher
+};
+
+export function createEmailNotificationPayload(payload: SubmissionPayload): SubmissionPayload {
+  const data: Record<string, string> = {};
+  for (const field of notificationFields[payload.formType]) {
+    const value = payload.data[field];
+    if (typeof value === 'string') data[field] = value;
+  }
+  return { formType: payload.formType, source: payload.source, data };
+}
+
 function asTrimmed(data: Record<string, string>, key: string) {
   return data[key]?.trim().replace(/\s+/g, ' ') || '';
 }
@@ -138,7 +166,10 @@ export function validateSubmission(input: unknown): SubmissionPayload {
   if (
     entries.length === 0 ||
     entries.length > 25 ||
-    entries.some(([key, value]) => !key || key.length > 80 || typeof value !== 'string' || value.length > 2000)
+    entries.some(([key, value]) =>
+      !key || key.length > 80 || !inputFields[candidate.formType as FormType].includes(key) ||
+      typeof value !== 'string' || value.length > 2000 || /[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F\\u007F]/.test(value)
+    )
   ) {
     throw new SubmissionValidationError('Invalid payload');
   }
@@ -239,6 +270,7 @@ type SubmissionDependencies = {
 export async function processSubmission(input: unknown, dependencies: SubmissionDependencies) {
   const payload = validateSubmission(input);
   const isApplication = payload.formType === 'Student' || payload.formType === 'Volunteer';
+  const notification = createEmailNotificationPayload(payload);
 
   if (dependencies.storageEnabled && isApplication) {
     if (!dependencies.idempotencyKey) {
@@ -250,7 +282,7 @@ export async function processSubmission(input: unknown, dependencies: Submission
 
     if (inserted) {
       try {
-        await dependencies.sendEmail(payload);
+        await dependencies.sendEmail(notification);
       } catch {
         // The durable application is authoritative; email is only a notification.
       }
@@ -259,6 +291,6 @@ export async function processSubmission(input: unknown, dependencies: Submission
     return { persisted: true, duplicate: !inserted };
   }
 
-  await dependencies.sendEmail(payload);
+  await dependencies.sendEmail(notification);
   return { persisted: false, duplicate: false };
 }
