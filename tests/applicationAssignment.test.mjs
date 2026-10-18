@@ -130,7 +130,7 @@ test('unassigning clears the assignee while retaining bounded audit metadata', a
   ), 'updated');
   assert.deepEqual(calls.updates[0].filter.assignmentRevision, firstRevision);
   assert.equal(calls.updates[0].update.$set.assignedTo, null);
-  assert.equal(calls.updates[0].update.$set.assignedAt, null);
+  assert.equal(calls.updates[0].update.$set.assignedAt, now);
   assert.equal(calls.updates[0].update.$set.assignedBy, 'admin@example.org');
   assert.equal(calls.updates[0].update.$set.lastAssignmentMutationId, firstMutationId);
 });

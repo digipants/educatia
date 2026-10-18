@@ -29,7 +29,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: {
   const result = await getAdminApplication(id);
   if (result.status !== 'ok') {
     return (
-      <main className="container page-shell py-16">
+      <div className="container page-shell py-16">
         <section className="card mx-auto max-w-xl text-center">
           <h1 className="text-2xl font-semibold">Application details</h1>
           <p className="mt-3 text-slate-600">
@@ -41,18 +41,18 @@ export default async function ApplicationDetailPage({ params, searchParams }: {
           {result.status === 'unauthenticated' ? <div className="mt-6"><AdminAuthButton action="sign-in" /></div> : null}
           {result.status === 'unauthorized' ? <div className="mt-6"><AdminAuthButton action="sign-out" /></div> : null}
         </section>
-      </main>
+      </div>
     );
   }
 
   if (result.value.kind === 'invalid-id' || !result.value.application) {
     return (
-      <main className="container page-shell py-16">
+      <div className="container page-shell py-16">
         <section className="card mx-auto max-w-xl text-center">
           <h1 className="text-2xl font-semibold">Application not found</h1>
           <Link className="btn mt-6" href="/admin/applications">Back to inbox</Link>
         </section>
-      </main>
+      </div>
     );
   }
 
@@ -60,7 +60,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: {
   const updateResult = typeof query.update === 'string' ? query.update : '';
   const assignmentResult = typeof query.assignment === 'string' ? query.assignment : '';
   return (
-    <main className="container page-shell py-10 sm:py-16">
+    <div className="container page-shell py-10 sm:py-16">
       <section className="card mx-auto max-w-3xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -123,6 +123,6 @@ export default async function ApplicationDetailPage({ params, searchParams }: {
           ))}
         </dl>
       </section>
-    </main>
+    </div>
   );
 }

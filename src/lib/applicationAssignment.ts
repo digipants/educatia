@@ -104,7 +104,7 @@ export async function updateApplicationAssignmentAtomically(
     {
       $set: {
         assignedTo: mutation.assignedTo,
-        assignedAt: mutation.assignedTo ? now : null,
+        assignedAt: now,
         assignedBy,
         assignmentRevision: nextRevision,
         lastAssignmentMutationId: mutation.mutationId
