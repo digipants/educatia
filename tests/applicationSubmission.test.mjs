@@ -22,8 +22,7 @@ const student = (source = 'Contact Page', consent = 'true') => ({
     studentWhatsappNo: '+91 98765 11111',
     emailId: 'asha@example.org',
     program: 'Academics',
-    parentGuardianConsent: consent,
-    injectedField: 'do not persist'
+    parentGuardianConsent: consent
   }
 });
 
@@ -38,8 +37,7 @@ const volunteer = () => ({
     whatsapp: '+91 98765 11111',
     email: 'RAVI@example.org',
     address: '12 Private Street',
-    serviceOrAreaOfExpertise: 'Mathematics tutoring',
-    injectedField: 'do not persist'
+    serviceOrAreaOfExpertise: 'Mathematics tutoring'
   }
 });
 
@@ -246,3 +244,59 @@ test('storage-enabled applications require a valid idempotency key', async () =>
     idempotencyKey: null
   })), SubmissionValidationError);
 });
+
+test('unknown submitted fields and control characters are rejected before email or database side effects', async () => {
+  for (const payload of [
+    { ...student(), data: { ...student().data, injectedField: 'extra private info' } },
+    { ...volunteer(), data: { ...volunteer().data, debugInfo: 'not allowed' } },
+    { source: 'Contact Page', formType: 'Parent', data: { fullName: 'Parent', hidden: 'extra' } },
+    { source: 'Contact Page', formType: 'Teacher', data: { fullName: 'Teacher\u0000Injected' } }
+  ]) {
+    let sideEffects = 0;
+    await assert.rejects(processSubmission(payload, dependencies({
+      saveApplication: async () => { sideEffects++; return true; },
+      sendEmail: async () => { sideEffects++; }
+    })), SubmissionValidationError);
+    assert.equal(sideEffects, 0);
+  }
+});
+
+test('outbound Student emails exclude child DOB, gender, private contact and arbitrary keys', async () => {
+  let message;
+  await processSubmission(student(), dependencies({
+    sendEmail: async (data) => { message = data; }
+  }));
+  assert.deepEqual(Object.keys(message.data), [
+    'fullName', 'classOrGrade', 'instituteSchoolUniversity',
+    'parentOrGuardianFullName', 'parentOrGuardianContactNo',
+    'program', 'parentGuardianConsent'
+  ]);
+  assert.equal('dob' in message.data, false);
+  assert.equal('gender' in message.data, false);
+  assert.equal('studentWhatsappNo' in message.data, false);
+  assert.equal('emailId' in message.data, false);
+});
+
+test('outbound Volunteer emails omit DOB, gender and street address', async () => {
+  let message;
+  await processSubmission(volunteer(), dependencies({
+    sendEmail: async (data) => { message = data; }
+  }));
+  assert.deepEqual(Object.keys(message.data), [
+    'fullName', 'mobile', 'whatsapp', 'email', 'serviceOrAreaOfExpertise'
+  ]);
+  for (const key of ['dob', 'gender', 'address']) assert.equal(key in message.data, false);
+});
+
+test('stored applicant notifications use the same minimal outbound email projection', async () => {
+  let message;
+  await processSubmission(student(), dependencies({
+    storageEnabled: true,
+    saveApplication: async () => true,
+    sendEmail: async (data) => { message = data; }
+  }));
+  assert.equal('dob' in message.data, false);
+  assert.equal('gender' in message.data, false);
+  assert.equal(message.data.parentOrGuardianContactNo, '+91 98765 43210');
+});
+
