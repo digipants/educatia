@@ -54,3 +54,27 @@ test('activity omits invalid timestamps and hides administrators no longer allow
   assert.deepEqual(activity.map((item) => item.actor), [null, null]);
   assert.equal(activity[1].message, 'Assignment changed');
 });
+
+test('activity identifies an unassignment from the latest assignment metadata', () => {
+  const activity = buildApplicationActivity({
+    _id: '4d6f58dc-1d5b-49fa-9627-ec5ed0749bb7',
+    formType: 'Volunteer',
+    source: 'Become a Member',
+    data: {},
+    status: 'New',
+    createdAt: new Date('2026-01-01T00:00:00.000Z'),
+    assignedAt: new Date('2026-01-02T00:00:00.000Z'),
+    assignedBy: 'admin@example.org',
+    assignedTo: null,
+    assignmentRevision: '6a7bc93e-44b9-4d81-b245-53b8ae8ff480'
+  }, administratorEmails);
+
+  const assignment = activity.find((item) => item.kind === 'assignment');
+  assert.deepEqual(assignment, {
+    id: 'assignment-6a7bc93e-44b9-4d81-b245-53b8ae8ff480',
+    kind: 'assignment',
+    occurredAt: '2026-01-02T00:00:00.000Z',
+    actor: 'admin@example.org',
+    message: 'Application unassigned'
+  });
+});

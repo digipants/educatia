@@ -58,7 +58,11 @@ export function buildApplicationActivity(
       kind: 'assignment',
       occurredAt: assignmentAt.toISOString(),
       actor: currentAllowlistedEmail(record.assignedBy, administratorEmails),
-      message: assignedTo ? `Assigned to ${assignedTo}` : 'Assignment changed'
+      message: assignedTo
+        ? `Assigned to ${assignedTo}`
+        : record.assignedTo === null
+          ? 'Application unassigned'
+          : 'Assignment changed'
     });
   }
 
