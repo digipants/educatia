@@ -1,0 +1,65 @@
+name: Tailwind v4 migration preflight
+
+on:
+  push:
+    branches:
+      - wip/tailwind4-educatia
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tailwind-preflight-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  migration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: 'true'
+      NEXT_TELEMETRY_DISABLED: '1'
+      ADMIN_APPLICATIONS_ENABLED: 'false'
+      APPLICATION_STORAGE_ENABLED: 'false'
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Regenerate lockfile for migration
+        run: npm install --package-lock-only --ignore-scripts --no-audit
+
+      - name: Install exact new dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Compile production build
+        run: npm run build
+
+      - name: Collect full audit
+        if: always()
+        run: npm audit --json > audit.json || true
+
+      - name: Check production advisories
+        run: npm audit --omit=dev --audit-level=moderate
+
+      - name: Upload generated lockfile and audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tailwind4-lockfile-audit
+          path: |
+            package-lock.json
+            audit.json
+          if-no-files-found: warn
+          retention-days: 3
