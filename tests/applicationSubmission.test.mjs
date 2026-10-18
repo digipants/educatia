@@ -250,7 +250,7 @@ test('unknown submitted fields and control characters are rejected before email 
     { ...student(), data: { ...student().data, injectedField: 'extra private info' } },
     { ...volunteer(), data: { ...volunteer().data, debugInfo: 'not allowed' } },
     { source: 'Contact Page', formType: 'Parent', data: { fullName: 'Parent', hidden: 'extra' } },
-    { source: 'Contact Page', formType: 'Teacher', data: { fullName: 'Teacher\\u0000Injected' } }
+    { source: 'Contact Page', formType: 'Teacher', data: { fullName: 'Teacher\u0000Injected' } }
   ]) {
     let sideEffects = 0;
     await assert.rejects(processSubmission(payload, dependencies({
