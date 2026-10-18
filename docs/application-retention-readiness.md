@@ -41,3 +41,24 @@ Do not fill these blanks with guessed retention durations or infer that a techni
 Application storage and administrator access are **disabled by default**. The protected inbox can display latest status and assignment metadata and a bounded, server-derived activity snapshot when all access prerequisites are deliberately enabled. It is **not** a durable historical audit log. Internal free-text notes and application retention/deletion automation are **not implemented**. Do not infer missing safeguards from a passing build or a Netlify preview.
 
 This document is internal operational guidance, not visitor-facing text or a published privacy policy.
+
+## Recommended control baseline (proposal, not a signed policy)
+
+Use the official **India DPDP Act/Rules** for applicable statutory obligations and commencement, **OWASP ASVS 5.0** for application authorization and sensitive-data protection, **NIST Privacy Framework** for minimization and data lifecycle, and **WCAG 2.2 AA** for form/admin accessibility. These frameworks guide engineering; they do **not** supply a universally mandated Student/Volunteer retention period.
+
+A trust-designated decision maker and qualified adviser must sign off **separately** on each class of data. Candidate minimum-necessary periods should be derived from the actual program purpose, pending applications, legal hold obligations and restore windows, rather than copying an unrelated company's arbitrary 30/90/365-day value. The **retention clock trigger** (submission, last meaningful contact, closure or verified withdrawal) must be selected explicitly. Define a path for correction/withdrawal requests with appropriate identity/guardian verification and safeguarding exceptions. No automatic TTL or erasure may be turned on while these decisions are pending.
+
+**Email is independently in scope.** With `APPLICATION_STORAGE_ENABLED=false`, the server still emails the full validated Student/Volunteer submission, including date of birth, gender and contact fields that are omitted from the MongoDB projection. Record who may open, forward, export and delete those mailbox messages, how long mailbox trash/backups retain them, whether mail is encrypted at rest/in transit, and how deletion requests propagate across copies. Retiring MongoDB records does not satisfy mailbox and backup deletion by itself.
+
+**Guardian acknowledgment is not verification.** The Student form currently requires a `parentGuardianConsent` checkbox, but the website does not establish the guardian's verified identity/age from that checkbox. The public privacy statement about children's consent must be reviewed against this factual behavior. Linked implementation/legal review: [Issue #27](https://github.com/digipants/educatia/issues/27). Do not alter legal claims until approved.
+
+**Phased statutory commencement:** Government Gazette notification G.S.R. 846(E), dated 13 November 2025, brings Rules 1–2 and 17–21 into effect on publication; Rule 4 starts after one year; Rules 3 and 5–16 and 22–23 after eighteen months. An authorized adviser must check the applicable Act provisions, latest amendments/exemptions and effective dates before approving changes.
+
+### References (standards, not audit certificates)
+
+- Government of India, DPDP Rules, 2025: https://www.meity.gov.in/static/uploads/2025/11/53450e6e5dc0bfa85ebd78686cadad39.pdf
+- NIST Privacy Framework: https://www.nist.gov/privacy-framework
+- OWASP ASVS 5.0, data protection / access control: https://github.com/OWASP/ASVS/tree/master/5.0
+- W3C WCAG 2.2: https://www.w3.org/TR/WCAG22/
+
+
