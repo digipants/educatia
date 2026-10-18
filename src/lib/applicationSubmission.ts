@@ -168,7 +168,7 @@ export function validateSubmission(input: unknown): SubmissionPayload {
     entries.length > 25 ||
     entries.some(([key, value]) =>
       !key || key.length > 80 || !inputFields[candidate.formType as FormType].includes(key) ||
-      typeof value !== 'string' || value.length > 2000 || /[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F\\u007F]/.test(value)
+      typeof value !== 'string' || value.length > 2000 || /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/.test(value)
     )
   ) {
     throw new SubmissionValidationError('Invalid payload');
