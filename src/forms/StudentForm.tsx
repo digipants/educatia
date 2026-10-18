@@ -80,7 +80,7 @@ export default function StudentForm() {
         required
         value={gender}
         onChange={(e) => setGender(e.target.value)}
-        className="w-full rounded-md border border-slate-200 px-3 py-2"
+        className="w-full rounded-md border border-slate-200 px-3 py-2 bg-gray-200"
       >
         <option value="">Select Gender</option>
         <option value="Male">Male</option>
@@ -136,7 +136,7 @@ export default function StudentForm() {
         required
         value={program}
         onChange={(e) => setProgram(e.target.value)}
-        className="w-full rounded-md border border-slate-200 px-3 py-2"
+        className="w-full rounded-md border border-slate-200 px-3 py-2 bg-gray-200"
       >
         <option value="">Select Program</option>
         <option value="Academics">Academics</option>
