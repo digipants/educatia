@@ -4,9 +4,12 @@
  * Pure helper with no applicant data logging, database access or network IO.
  */
 export class RequestBodyError extends Error {
-  constructor(public readonly status: 400 | 413 | 415, message: string) {
+  readonly status: 400 | 413 | 415;
+
+  constructor(status: 400 | 413 | 415, message: string) {
     super(message);
     this.name = 'RequestBodyError';
+    this.status = status;
   }
 }
 
