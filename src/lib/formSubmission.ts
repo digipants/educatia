@@ -20,9 +20,9 @@ async function opaqueRetryIdentity(body: string): Promise<string> {
 }
 
 function pruneRetryCache(now: number) {
-  for (const [identity, retry] of pendingIdempotencyKeys) {
+  pendingIdempotencyKeys.forEach((retry, identity) => {
     if (now - retry.firstAttemptAt >= RETRY_WINDOW_MS) pendingIdempotencyKeys.delete(identity);
-  }
+  });
   while (pendingIdempotencyKeys.size > MAX_PENDING_RETRIES) {
     const oldest = pendingIdempotencyKeys.keys().next().value;
     if (oldest === undefined) break;
