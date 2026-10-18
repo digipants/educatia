@@ -60,16 +60,18 @@ export default function StudentForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card space-y-3">
+    <form onSubmit={handleSubmit} aria-busy={loading} className="card space-y-3">
       <h3 className="text-lg font-semibold">Student</h3>
       <input
         required
+        aria-label="Full Name"
         placeholder="Full Name"
         value={fullName}
         onChange={(e) => setFullName(e.target.value)}
         className="w-full rounded-md border border-slate-200 px-3 py-2"
       />
       <input
+        aria-label="Date of birth"
         required
         type="date"
         value={dob}
@@ -77,6 +79,7 @@ export default function StudentForm() {
         className="w-full rounded-md border border-slate-200 px-3 py-2"
       />
       <select
+        aria-label="Gender"
         required
         value={gender}
         onChange={(e) => setGender(e.target.value)}
@@ -89,6 +92,7 @@ export default function StudentForm() {
       </select>
       <input
         required
+        aria-label="Class / Grade Currently Studying In"
         placeholder="Class / Grade Currently Studying In"
         value={grade}
         onChange={(e) => setGrade(e.target.value)}
@@ -96,6 +100,7 @@ export default function StudentForm() {
       />
       <input
         required
+        aria-label="Institute / School / University"
         placeholder="Institute / School / University"
         value={institute}
         onChange={(e) => setInstitute(e.target.value)}
@@ -103,6 +108,7 @@ export default function StudentForm() {
       />
       <input
         required
+        aria-label="Parent / Guardian Full Name"
         placeholder="Parent / Guardian Full Name"
         value={parentName}
         onChange={(e) => setParentName(e.target.value)}
@@ -111,6 +117,7 @@ export default function StudentForm() {
       <input
         required
         type="tel"
+        aria-label="Parent / Guardian Contact No"
         placeholder="Parent / Guardian Contact No"
         value={parentContact}
         onChange={(e) => setParentContact(e.target.value)}
@@ -119,6 +126,7 @@ export default function StudentForm() {
       <input
         required
         type="tel"
+        aria-label="Whatsapp No. of Student/Parent"
         placeholder="Whatsapp No. of Student/Parent"
         value={studentWhatsapp}
         onChange={(e) => setStudentWhatsapp(e.target.value)}
@@ -127,12 +135,14 @@ export default function StudentForm() {
       <input
         required
         type="email"
+        aria-label="Email ID"
         placeholder="Email ID"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className="w-full rounded-md border border-slate-200 px-3 py-2"
       />
       <select
+        aria-label="Program"
         required
         value={program}
         onChange={(e) => setProgram(e.target.value)}
@@ -159,7 +169,7 @@ export default function StudentForm() {
       <button type="submit" className="btn w-full" disabled={loading}>
         {loading ? 'Submitting...' : 'Submit'}
       </button>
-      {status ? <p className="text-xs text-slate-600">{status}</p> : null}
+      {status ? <p role="status" aria-live="polite" className="text-xs text-slate-600">{status}</p> : null}
     </form>
   );
 }

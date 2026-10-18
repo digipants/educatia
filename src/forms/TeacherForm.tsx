@@ -36,10 +36,11 @@ export default function TeacherForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card space-y-3">
+    <form onSubmit={handleSubmit} aria-busy={loading} className="card space-y-3">
       <h3 className="text-lg font-semibold">Teacher</h3>
       <input
         required
+        aria-label="Full name"
         placeholder="Full name"
         value={fullName}
         onChange={(e) => setFullName(e.target.value)}
@@ -47,6 +48,7 @@ export default function TeacherForm() {
       />
       <input
         required
+        aria-label="School / Organization"
         placeholder="School / Organization"
         value={organization}
         onChange={(e) => setOrganization(e.target.value)}
@@ -54,6 +56,7 @@ export default function TeacherForm() {
       />
       <textarea
         required
+        aria-label="How can we support your classroom?"
         placeholder="How can we support your classroom?"
         value={supportNeed}
         onChange={(e) => setSupportNeed(e.target.value)}
@@ -63,7 +66,7 @@ export default function TeacherForm() {
       <button type="submit" className="btn w-full" disabled={loading}>
         {loading ? 'Submitting...' : 'Submit'}
       </button>
-      {status ? <p className="text-xs text-slate-600">{status}</p> : null}
+      {status ? <p role="status" aria-live="polite" className="text-xs text-slate-600">{status}</p> : null}
     </form>
   );
 }
