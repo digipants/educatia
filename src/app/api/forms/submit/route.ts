@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { saveApplication } from '@/lib/applicationStore';
+import { parseBoundedJsonBody, RequestBodyError } from '@/lib/boundedRequestBody';
 import {
   IdempotencyConflictError,
   processSubmission,
@@ -66,12 +67,7 @@ export async function POST(request: Request) {
   let isStoredApplication = false;
 
   try {
-    const contentLength = Number(request.headers.get('content-length') || 0);
-    if (contentLength > 16384) {
-      return NextResponse.json({ error: 'Submission too large' }, { status: 413 });
-    }
-
-    const payload: unknown = await request.json();
+    const payload: unknown = await parseBoundedJsonBody(request);
     const storageEnabled = process.env.APPLICATION_STORAGE_ENABLED === 'true';
     const candidate = payload as Partial<SubmissionPayload> | null;
     isStoredApplication = Boolean(
@@ -104,6 +100,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
+    if (error instanceof RequestBodyError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     if (error instanceof SubmissionValidationError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
