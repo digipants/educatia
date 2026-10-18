@@ -51,16 +51,18 @@ export default function VolunteerForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card space-y-3">
+    <form onSubmit={handleSubmit} aria-busy={loading} className="card space-y-3">
       <h3 className="text-lg font-semibold">Volunteer</h3>
       <input
         required
+        aria-label="Full Name"
         placeholder="Full Name"
         value={fullName}
         onChange={(e) => setFullName(e.target.value)}
         className="w-full rounded-md border border-slate-200 px-3 py-2"
       />
       <input
+        aria-label="Date of birth"
         required
         type="date"
         value={dob}
@@ -68,6 +70,7 @@ export default function VolunteerForm() {
         className="w-full rounded-md border border-slate-200 px-3 py-2"
       />
       <select
+        aria-label="Gender"
         required
         value={gender}
         onChange={(e) => setGender(e.target.value)}
@@ -81,6 +84,7 @@ export default function VolunteerForm() {
       <input
         required
         type="tel"
+        aria-label="Mobile"
         placeholder="Mobile"
         value={mobile}
         onChange={(e) => setMobile(e.target.value)}
@@ -89,6 +93,7 @@ export default function VolunteerForm() {
       <input
         required
         type="tel"
+        aria-label="Whatsapp"
         placeholder="Whatsapp"
         value={whatsapp}
         onChange={(e) => setWhatsapp(e.target.value)}
@@ -97,6 +102,7 @@ export default function VolunteerForm() {
       <input
         required
         type="email"
+        aria-label="Email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -104,6 +110,7 @@ export default function VolunteerForm() {
       />
       <textarea
         required
+        aria-label="Address"
         placeholder="Address"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
@@ -112,6 +119,7 @@ export default function VolunteerForm() {
       />
       <textarea
         required
+        aria-label="Service Which You Can Offer / Area of Expertise"
         placeholder="Service Which You Can Offer / Area of Expertise"
         value={expertise}
         onChange={(e) => setExpertise(e.target.value)}
@@ -121,7 +129,7 @@ export default function VolunteerForm() {
       <button type="submit" className="btn w-full" disabled={loading}>
         {loading ? 'Submitting...' : 'Submit'}
       </button>
-      {status ? <p className="text-xs text-slate-600">{status}</p> : null}
+      {status ? <p role="status" aria-live="polite" className="text-xs text-slate-600">{status}</p> : null}
     </form>
   );
 }
