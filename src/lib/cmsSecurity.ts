@@ -84,6 +84,13 @@ export function classifyCmsOperationFailure(error: unknown): string {
   return 'unexpected';
 }
 
+function safeMongoServerCode(error: unknown): string | null {
+  if (!error || typeof error !== 'object') return null;
+  const details = error as { name?: unknown; code?: unknown };
+  if (details.name !== 'MongoServerError' || !Number.isSafeInteger(details.code)) return null;
+  return `mongo_code_${details.code}`;
+}
+
 export async function withCmsStaff<T>(
   configuration: CmsConfiguration,
   email: unknown,
@@ -98,7 +105,10 @@ export async function withCmsStaff<T>(
   }
   try { return { status: 'ok', value: await operation() }; }
   catch (error) {
-    console.warn('educatia_cms_operation_failure', classifyCmsOperationFailure(error));
+    const category = classifyCmsOperationFailure(error);
+    const serverCode = category === 'database_server_error' ? safeMongoServerCode(error) : null;
+    if (serverCode) console.warn('educatia_cms_operation_failure', category, serverCode);
+    else console.warn('educatia_cms_operation_failure', category);
     return { status: 'error' };
   }
 }

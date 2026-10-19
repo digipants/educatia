@@ -19,7 +19,8 @@
    - `database_unreachable`, `database_network`, `database_timeout`: check cluster availability, DNS/TLS and approved network egress from Netlify's serverless runtime.
    - `database_pool_timeout`: inspect concurrent load/pool exhaustion.
    - `database_configuration`: inspect URI formatting offline.
-   - `database_server_error`: review Atlas server/database diagnostic tools with an authorized operator, without logging raw driver errors.
+   - `database_server_error mongo_code_N`: use the numeric MongoDB error code to identify the server-side failure. Only the numeric driver code is logged; never add raw exception messages, command data, hostnames, or connection details. See the [MongoDB error code reference](https://www.mongodb.com/docs/manual/reference/error-codes/).
+   - `database_server_error` without a code: review Atlas server/database diagnostic tools with an authorized operator, without logging raw driver errors.
    - `unexpected`: inspect deployment config and internal application error handling without printing credentials.
 4. Atlas SRV URIs commonly require an explicit authentication-source check. The application always selects database `educatia` via `client.db(DB_NAME)`; the URI pathname can still matter for authentication, so inspect the exact URI *privately* rather than inferring it from the cluster name.
 5. Do **not** add `0.0.0.0/0` to Atlas network access as a shortcut. An Atlas Organization Owner must enable AI-client access before the Atlas connector can inspect this project; alternatively, an authorized operator can review it in Atlas directly.
