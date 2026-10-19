@@ -5,7 +5,8 @@ import { getDb } from './server';
 import { authOptions } from './auth';
 import { getCmsConfiguration, getCmsRole, withCmsStaff, type CmsRole } from './cmsSecurity';
 import {
-  canCmsTransition, type CmsFields, type CmsPost, isCmsId, parseEvidenceNote
+  canCmsTransition, isCmsId, parseCmsReviewReason, parseEvidenceReference,
+  type CmsFields, type CmsPost, type CmsPublishChecks
 } from './cmsContent';
 import type { CmsKind } from './cmsContent';
 
@@ -102,7 +103,7 @@ export async function submitCmsPost(
   id: string, expectedRevision: string, note: string
 ): Promise<StoreResult> {
   if (!isCmsId(id) || !isCmsId(expectedRevision)) return 'stale';
-  const evidenceNote = parseEvidenceNote(note);
+  const evidenceNote = parseEvidenceReference(note);
   const result = await (await cmsCollection()).updateOne(
     { _id: id, revision: expectedRevision, status: 'draft', kind: { $in: ['announcement', 'program-update'] } },
     { $set: { status: 'review', evidenceNote, updatedAt: new Date(), revision: randomUUID() } }
@@ -111,10 +112,10 @@ export async function submitCmsPost(
 }
 
 export async function returnCmsPostToDraft(
-  id: string, expectedRevision: string, feedback: string
+  id: string, expectedRevision: string, reason: unknown
 ): Promise<StoreResult> {
   if (!isCmsId(id) || !isCmsId(expectedRevision)) return 'stale';
-  const reviewFeedback = parseEvidenceNote(feedback);
+  const reviewFeedback = parseCmsReviewReason(reason);
   const now = new Date();
   const result = await (await cmsCollection()).updateOne(
     { _id: id, revision: expectedRevision, status: 'review', kind: { $in: ['announcement', 'program-update'] } },
@@ -127,7 +128,7 @@ export async function returnCmsPostToDraft(
 }
 
 export async function publishCmsPost(
-  id: string, expectedRevision: string, reviewer: string
+  id: string, expectedRevision: string, reviewer: string, checks: CmsPublishChecks
 ): Promise<StoreResult> {
   if (!isCmsId(id) || !isCmsId(expectedRevision)) return 'stale';
   const collection = await cmsCollection();
@@ -135,7 +136,7 @@ export async function publishCmsPost(
   const post = await collection.findOne({ _id: id, revision: expectedRevision, kind: textKinds }, {
     projection: { status: 1, authorEmail: 1, evidenceNote: 1 }
   });
-  if (!post || !canCmsTransition(post, 'publish', reviewer)) return 'stale';
+  if (!post || !canCmsTransition(post, 'publish', reviewer, checks)) return 'stale';
   const now = new Date();
   const result = await collection.updateOne(
     { _id: id, revision: expectedRevision, status: 'review', kind: textKinds },

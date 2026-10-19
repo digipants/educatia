@@ -29,10 +29,22 @@ test('draft, review, publish and archive paths are separated and revision-protec
   const actions = await read('src/app/admin/content/actions.ts');
   assert.match(actions, /withCmsAccess\('publisher'/);
   assert.match(actions, /withCmsAccess\('editor'/);
-  assert.match(actions, /evidenceConfirmed !== 'yes'/);
+  assert.match(actions, /parseCmsPublishChecks\(values\.sourceVerified, values\.claimsAccurate, values\.privacyReviewed\)/);
+  assert.match(actions, /returnCmsPostToDraft\(id!, values\.expectedRevision, values\.reason\), \{ requirePublishing: false \}\)/);
+  assert.match(actions, /archiveCmsPost\(id!, values\.expectedRevision\), \{ requirePublishing: false \}\)/);
   assert.match(actions, /parseCmsActionForm\(form,/);
   const parser = await read('src/lib/cmsActionForm.ts');
   assert.match(parser, /values.has\(key\)/);
+  const content = await read('src/lib/cmsContent.ts');
+  assert.match(content, /isEvidenceReference\(post\.evidenceNote\)/);
+  assert.match(content, /checks\?\.sourceVerified === true && checks\.claimsAccurate === true && checks\.privacyReviewed === true/);
+  const detail = await read('src/app/admin/content/[id]/page.tsx');
+  assert.match(detail, /name="sourceVerified" type="checkbox" value="yes" required/);
+  assert.match(detail, /name="claimsAccurate" type="checkbox" value="yes" required/);
+  assert.match(detail, /name="privacyReviewed" type="checkbox" value="yes" required/);
+  assert.match(detail, /name="reason" required defaultValue=""/);
+  assert.match(detail, /post\.status === 'published' && publisher/);
+  assert.match(detail, /post\.status === 'review' && publisher/);
 });
 
 test('public site displays only published records and no unsupported example posts', async () => {

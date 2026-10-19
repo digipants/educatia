@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { readCmsPost, cmsRoleForEmail } from '@/lib/cmsStore';
 import { getCmsConfiguration } from '@/lib/cmsSecurity';
 import { authOptions } from '@/lib/auth';
+import { cmsReviewReasons, type CmsReviewReason } from '@/lib/cmsContent';
 import { CmsAuthButton } from '../CmsAuthButton';
 import { CmsAccessActions } from '../CmsAccessActions';
 import {
@@ -14,6 +15,12 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const metadata: Metadata = { title: 'Review content', robots: { index: false, follow: false, noarchive: true } };
 const input = 'block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900';
+const reviewReasonLabels: Record<CmsReviewReason, string> = {
+  'source-needs-verification': 'Source needs verification',
+  'claim-needs-support': 'A claim needs supporting evidence',
+  'privacy-review-needed': 'Privacy review needed',
+  'content-correction-needed': 'Content correction needed'
+};
 
 export default async function CmsEditPage({ params, searchParams }: {
   params: Promise<{ id: string }>;
@@ -41,6 +48,9 @@ export default async function CmsEditPage({ params, searchParams }: {
   const publisher = cmsRoleForEmail(session?.user?.email) === 'publisher';
   const mayPublish = publisher && getCmsConfiguration(process.env).publishingEnabled;
   const sameAuthor = post.authorEmail.trim().toLowerCase() === session?.user?.email?.trim().toLowerCase();
+  const reviewFeedback = post.reviewFeedback
+    ? reviewReasonLabels[post.reviewFeedback as CmsReviewReason] ?? post.reviewFeedback
+    : '';
   return <div className="container page-shell space-y-6 py-10 sm:py-16">
     <section className="card space-y-4">
       <Link className="text-sm font-semibold text-brand-primary underline" href="/admin/content">← Editorial workspace</Link>
@@ -59,8 +69,8 @@ export default async function CmsEditPage({ params, searchParams }: {
     {post.status === 'draft' ? <>
       <section className="card space-y-3">
         <h2 className="text-xl font-semibold">Edit draft</h2>
-        {post.reviewFeedback ? <p role="status" className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-          Reviewer feedback: {post.reviewFeedback}
+        {reviewFeedback ? <p role="status" className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+          Reviewer feedback: {reviewFeedback}
         </p> : null}
         <form action={editCmsDraftAction} className="space-y-4">
           <input type="hidden" name="postId" value={post.id} />
@@ -85,12 +95,16 @@ export default async function CmsEditPage({ params, searchParams }: {
       </section>
       <section className="card space-y-3">
         <h2 className="text-xl font-semibold">Submit for review</h2>
-        <p className="text-sm text-slate-600">Save your changes first. Explain how the announcement was verified; do not include student or guardian private details.</p>
+        <p className="text-sm text-slate-600">Save your changes first. Enter only the opaque source-register reference; never put names, contact details, consent records, or free-text notes here.</p>
         <form action={submitCmsReviewAction} className="space-y-3">
           <input type="hidden" name="postId" value={post.id} />
           <input type="hidden" name="expectedRevision" value={post.revision} />
-          <label className="block space-y-1 text-sm font-medium">Verification source (internal)
-            <textarea name="evidenceNote" required maxLength={400} rows={3} className={input} />
+          <label className="block space-y-1 text-sm font-medium">Source-register reference (internal)
+            <input name="evidenceNote" required maxLength={80} pattern="[A-Za-z0-9][A-Za-z0-9._/-]{1,79}"
+              autoComplete="off" className={input} aria-describedby="source-reference-help" />
+            <span id="source-reference-help" className="block text-xs font-normal text-slate-600">
+              Use an opaque reference from the trust&apos;s source register, not the source text itself.
+            </span>
           </label>
           <button type="submit" className="btn">Request review</button>
         </form>
@@ -100,7 +114,7 @@ export default async function CmsEditPage({ params, searchParams }: {
       <p className="font-medium text-slate-900">{post.summary}</p>
       <p className="whitespace-pre-line break-words text-sm leading-relaxed text-slate-700">{post.body}</p>
       <div className="border-t border-slate-200 pt-3">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Internal source note</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Internal source-register reference</p>
         <p className="mt-1 whitespace-pre-line break-words text-sm text-slate-700">{post.evidenceNote || 'None recorded'}</p>
       </div>
       {post.status === 'review' ? (
@@ -109,31 +123,44 @@ export default async function CmsEditPage({ params, searchParams }: {
         ) : <form action={publishCmsPostAction} className="space-y-3 border-t border-slate-100 pt-4">
           <input type="hidden" name="postId" value={post.id} />
           <input type="hidden" name="expectedRevision" value={post.revision} />
-          <label className="flex items-start gap-2 text-sm text-slate-700">
-            <input name="evidenceConfirmed" type="checkbox" value="yes" required className="mt-1" />
-            <span>I verified this update against the source, checked its accuracy, and confirmed it contains no unapproved personal details.</span>
-          </label>
+          <fieldset className="space-y-3">
+            <legend className="text-sm font-semibold text-slate-800">Publisher checks</legend>
+            <label className="flex items-start gap-2 text-sm text-slate-700">
+              <input name="sourceVerified" type="checkbox" value="yes" required className="mt-1" />
+              <span>I checked the referenced source record and it supports this update.</span>
+            </label>
+            <label className="flex items-start gap-2 text-sm text-slate-700">
+              <input name="claimsAccurate" type="checkbox" value="yes" required className="mt-1" />
+              <span>I checked factual claims, dates, and figures against the source; unsupported outcomes are not stated as facts.</span>
+            </label>
+            <label className="flex items-start gap-2 text-sm text-slate-700">
+              <input name="privacyReviewed" type="checkbox" value="yes" required className="mt-1" />
+              <span>I checked that no child is identifiable and no personal or sensitive details are exposed; any exceptional child-related mention has separately documented safeguarding approval.</span>
+            </label>
+          </fieldset>
           <button className="btn" type="submit">Approve and publish</button>
         </form> : <p className="text-sm text-slate-600">
           {publisher && !getCmsConfiguration(process.env).publishingEnabled
-            ? 'Publishing is paused while access checks are completed.'
+            ? 'Publishing is paused. You can still return this item for correction.'
             : "Awaiting a publisher's review."}
         </p>
       ) : null}
-      {post.status === 'published' && mayPublish ? (
+      {post.status === 'published' && publisher ? (
         <form action={archiveCmsPostAction} className="border-t border-slate-100 pt-4">
           <input type="hidden" name="postId" value={post.id} />
           <input type="hidden" name="expectedRevision" value={post.revision} />
           <button type="submit" className="btn">Archive / unpublish</button>
         </form>
       ) : null}
-      {post.status === 'review' && mayPublish ? (
+      {post.status === 'review' && publisher ? (
         <form action={returnCmsDraftAction} className="space-y-3 border-t border-slate-100 pt-4">
           <input type="hidden" name="postId" value={post.id} />
           <input type="hidden" name="expectedRevision" value={post.revision} />
-          <label className="block space-y-1 text-sm font-medium">Request changes
-            <textarea name="feedback" required rows={3} maxLength={400}
-              className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" />
+          <label className="block space-y-1 text-sm font-medium">Return reason
+            <select name="reason" required defaultValue="" className={input}>
+              <option value="" disabled>Select a reason</option>
+              {cmsReviewReasons.map(reason => <option key={reason} value={reason}>{reviewReasonLabels[reason]}</option>)}
+            </select>
           </label>
           <button className="btn" type="submit">Return to draft</button>
         </form>
