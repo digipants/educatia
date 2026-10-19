@@ -8,17 +8,8 @@ import {
   archiveCmsPost, returnCmsPostToDraft, withCmsAccess
 } from '@/lib/cmsStore';
 import { isCmsId, parseCmsFields, CmsValidationError } from '@/lib/cmsContent';
+import { parseCmsActionForm } from '@/lib/cmsActionForm';
 
-function fields(form: FormData, keys: readonly string[]) {
-  const entries = Array.from(form.entries());
-  const received = entries.map(([key]) => key);
-  if (received.length !== keys.length || received.some(key => !keys.includes(key)) ||
-    new Set(received).size !== received.length ||
-    entries.some(([, value]) => typeof value !== 'string')) {
-    throw new CmsValidationError('Invalid request');
-  }
-  return Object.fromEntries(entries) as Record<string, string>;
-}
 
 function finish(id: string | null, status: 'saved' | 'error' | 'stale') {
   revalidatePath('/admin/content');
@@ -31,7 +22,7 @@ export async function createCmsDraftAction(form: FormData) {
   let id: string | null = null;
   let saved = false;
   try {
-    const values = fields(form, ['postId', 'kind', 'title', 'summary', 'body']);
+    const values = parseCmsActionForm(form, ['postId', 'kind', 'title', 'summary', 'body']);
     if (!isCmsId(values.postId)) throw new CmsValidationError('Invalid request');
     id = values.postId;
     const content = parseCmsFields({
@@ -47,7 +38,7 @@ export async function editCmsDraftAction(form: FormData) {
   let id: string | null = null;
   let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
-    const values = fields(form, ['postId', 'expectedRevision', 'kind', 'title', 'summary', 'body']);
+    const values = parseCmsActionForm(form, ['postId', 'expectedRevision', 'kind', 'title', 'summary', 'body']);
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
     id = values.postId;
     const content = parseCmsFields({
@@ -64,7 +55,7 @@ export async function submitCmsReviewAction(form: FormData) {
   let id: string | null = null;
   let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
-    const values = fields(form, ['postId', 'expectedRevision', 'evidenceNote']);
+    const values = parseCmsActionForm(form, ['postId', 'expectedRevision', 'evidenceNote']);
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
     id = values.postId;
     const result = await withCmsAccess('editor', async () =>
@@ -78,7 +69,7 @@ export async function publishCmsPostAction(form: FormData) {
   let id: string | null = null;
   let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
-    const values = fields(form, ['postId', 'expectedRevision', 'evidenceConfirmed']);
+    const values = parseCmsActionForm(form, ['postId', 'expectedRevision', 'evidenceConfirmed']);
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision) ||
       values.evidenceConfirmed !== 'yes') throw new CmsValidationError('Invalid request');
     id = values.postId;
@@ -93,7 +84,7 @@ export async function returnCmsDraftAction(form: FormData) {
   let id: string | null = null;
   let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
-    const values = fields(form, ['postId', 'expectedRevision', 'feedback']);
+    const values = parseCmsActionForm(form, ['postId', 'expectedRevision', 'feedback']);
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
     id = values.postId;
     const result = await withCmsAccess('publisher', async () =>
@@ -107,7 +98,7 @@ export async function archiveCmsPostAction(form: FormData) {
   let id: string | null = null;
   let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
-    const values = fields(form, ['postId', 'expectedRevision']);
+    const values = parseCmsActionForm(form, ['postId', 'expectedRevision']);
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
     id = values.postId;
     const result = await withCmsAccess('publisher', async () =>

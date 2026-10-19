@@ -19,3 +19,7 @@
 - Test the editor's draft flow, the independent publisher flow, an unauthorized Google account, same-person publication denial, stale edits, and archiving with **synthetic** updates.
 - Check the protected dashboard is noindex/no-store, publishing switch is off until ready, and public news displays only `published` records.
 - Confirm the final GitHub Actions run, Netlify preview and production commit. No manual deployment.
+
+## Native form compatibility
+
+The server accepts documented Next.js `$ACTION_` metadata while strictly allowlisting all editorial fields, rejecting duplicate fields, file uploads and unknown user fields. A 16 KiB action-body ceiling accommodates UTF-8 text without allowing arbitrary uploads; individual CMS title, summary, body and evidence lengths remain enforced by `cmsContent.ts`. The higher limit applies to all Server Actions, so existing applicant administrator actions must retain their stricter field and size checks.
