@@ -5,6 +5,7 @@ import { readCmsPost, cmsRoleForEmail } from '@/lib/cmsStore';
 import { getCmsConfiguration } from '@/lib/cmsSecurity';
 import { authOptions } from '@/lib/auth';
 import { CmsAuthButton } from '../CmsAuthButton';
+import { CmsAccessActions } from '../CmsAccessActions';
 import {
   editCmsDraftAction, submitCmsReviewAction, publishCmsPostAction, archiveCmsPostAction, returnCmsDraftAction
 } from '../actions';
@@ -28,13 +29,12 @@ export default async function CmsEditPage({ params, searchParams }: {
         : result.status === 'unauthenticated' ? 'Sign in with your team Google account.'
           : result.status === 'unauthorized' ? 'This account is not authorized.'
             : 'Unable to load this content.'}</p>
-      {result.status === 'unauthenticated' ? <CmsAuthButton action="sign-in" /> : null}
-      <Link href="/admin/content" className="text-brand-primary underline">Back to workspace</Link>
+      <CmsAccessActions status={result.status} />
     </div></section>;
   }
   if (!result.value) return <div className="container page-shell py-16"><div className="card">
     <h1 className="text-2xl font-semibold">Content not found</h1>
-    <Link className="mt-4 inline-block text-brand-primary underline" href="/admin/content">Back to workspace</Link>
+    <CmsAccessActions status="not-found" />
   </div></div>;
   const post = result.value;
   const session = await getServerSession(authOptions);
