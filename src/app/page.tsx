@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Hero from '@/components/Hero';
-import ImpactStats from '@/components/ImpactStats';
 import { createPageMetadata } from '@/lib/seo';
 
 export const metadata = createPageMetadata({
