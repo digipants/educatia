@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { parseCmsActionForm } from '../src/lib/cmsActionForm.ts';
-import { CmsValidationError } from '../src/lib/cmsContent.ts';
+import { parseCmsActionForm, CmsActionFormError } from '../src/lib/cmsActionForm.ts';
 import { readFile } from 'node:fs/promises';
 
 const keys = ['postId','kind','title','summary','body'];
@@ -28,7 +27,7 @@ test('rejects unknown user input, duplicate user keys and missing fields', () =>
   const duplicate = valid(); duplicate.append('title', 'overwrite');
   const missing = valid(); missing.delete('body');
   for (const form of [injected, duplicate, missing]) {
-    assert.throws(() => parseCmsActionForm(form, keys), CmsValidationError);
+    assert.throws(() => parseCmsActionForm(form, keys), CmsActionFormError);
   }
 });
 
@@ -39,7 +38,7 @@ test('rejects files, spoofed unknown action fields and oversized action metadata
   const tooMany = valid();
   for (let i=0;i<11;i++) tooMany.append('$ACTION_ID_' + i, 'x');
   for (const form of [file, unknown, oversized, tooMany]) {
-    assert.throws(() => parseCmsActionForm(form, keys), CmsValidationError);
+    assert.throws(() => parseCmsActionForm(form, keys), CmsActionFormError);
   }
 });
 

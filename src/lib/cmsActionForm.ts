@@ -1,4 +1,4 @@
-import { CmsValidationError } from './cmsContent';
+export class CmsActionFormError extends Error {}
 
 // Next.js can attach internal action routing fields to native form submissions.
 // Treat only framework-generated keys as metadata. All editorial user fields
@@ -15,14 +15,14 @@ export function parseCmsActionForm(form: FormData, keys: readonly string[]): Rec
     if (actionMetadataPattern.test(key)) {
       frameworkFields++;
       if (frameworkFields > MAX_METADATA_FIELDS || typeof value !== 'string' ||
-        value.length > MAX_METADATA_VALUE) throw new CmsValidationError('Invalid request');
+        value.length > MAX_METADATA_VALUE) throw new CmsActionFormError('Invalid request');
       continue;
     }
     if (!expected.has(key) || values.has(key) || typeof value !== 'string') {
-      throw new CmsValidationError('Invalid request');
+      throw new CmsActionFormError('Invalid request');
     }
     values.set(key, value);
   }
-  if (values.size !== expected.size) throw new CmsValidationError('Invalid request');
+  if (values.size !== expected.size) throw new CmsActionFormError('Invalid request');
   return Object.fromEntries(values);
 }
