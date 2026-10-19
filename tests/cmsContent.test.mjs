@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { parseCmsFields, parseEvidenceNote, canCmsTransition, isCmsId, CmsValidationError } from '../src/lib/cmsContent.ts';
+import { parseCmsFields, parseEvidenceNote, canCmsTransition, isCmsId, parseCmsActionFields, CmsValidationError } from '../src/lib/cmsContent.ts';
 
 const good = { kind: 'program-update', title: 'Program schedule information', summary: 'Contact our team about learning options.', body: 'Please contact Educatia for details about available sessions.' };
 
@@ -39,4 +39,22 @@ test('publisher can return an item under review to draft for correction', () => 
   assert.equal(canCmsTransition(underReview, 'return', 'publisher@example.org'), true);
   underReview.status = 'draft';
   assert.equal(canCmsTransition(underReview, 'return', 'publisher@example.org'), false);
+});
+
+test('real Next.js action metadata does not invalidate legitimate CMS forms', () => {
+  const keys = ['postId', 'title'];
+  const entries = [
+    ['$ACTION_ID_f6e57', 'framework-owned'],
+    ['postId', 'e8d1b88f-1659-43f1-95ab-a030920a4630'],
+    ['title', 'Factual program update']
+  ];
+  assert.deepEqual(parseCmsActionFields(entries, keys), {
+    postId: 'e8d1b88f-1659-43f1-95ab-a030920a4630',
+    title: 'Factual program update'
+  });
+  for (const extra of [
+    ['role', 'publisher'],
+    ['title', 'duplicate'],
+    ['filename', new Uint8Array([1, 2, 3])]
+  ]) assert.throws(() => parseCmsActionFields([...entries, extra], keys), CmsValidationError);
 });

@@ -6,7 +6,7 @@ const require = createRequire(import.meta.url);
 const nextConfig = {
   reactStrictMode: true,
   experimental: {
-    serverActions: { bodySizeLimit: '4kb' }
+    serverActions: { bodySizeLimit: '16kb' }
   },
   async headers() {
     return [

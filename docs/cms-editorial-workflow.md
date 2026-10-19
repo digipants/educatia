@@ -19,3 +19,12 @@
 - Test the editor's draft flow, the independent publisher flow, an unauthorized Google account, same-person publication denial, stale edits, and archiving with **synthetic** updates.
 - Check the protected dashboard is noindex/no-store, publishing switch is off until ready, and public news displays only `published` records.
 - Confirm the final GitHub Actions run, Netlify preview and production commit. No manual deployment.
+
+## Browser form handling and size limits
+
+Next.js appends `$ACTION_` metadata to native Server Action forms. The CMS accepts only
+those framework metadata keys in addition to its exact bounded user fields; it rejects other
+unexpected or duplicated form fields. The Server Action body limit is set to **16 KiB** for
+UTF-8 editorial content and remains enforced by Next.js with its origin checks. Per-field
+title, summary, body and evidence-note validation remains strict, and applicant/API routes
+retain their own separate limits.
