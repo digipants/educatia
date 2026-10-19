@@ -87,23 +87,24 @@ export default function BecomeMemberPage() {
       <div className="space-y-2">
         <h1 className="text-3xl font-semibold">Become a Member</h1>
         <p className="text-slate-700">
-          Choose the role that fits you best. Applications are sent to the trust
-          by email; student and volunteer applications are also stored only when
-          application storage has been explicitly enabled.
+          Choose how you would like to participate. Share your details and
+          our team will contact you about the next steps.
         </p>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2" role="group" aria-label="Choose application type">
         {(Object.keys(roles) as RoleKey[]).map((key) => (
           <button
             key={key}
             type="button"
+            aria-pressed={role === key}
+            disabled={loading}
             onClick={() => {
               setRole(key);
               setForm({});
               setStatus('');
             }}
-            className={`card text-left space-y-1 transition ${
+            className={`card min-h-16 text-left space-y-1 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-700 ${
               role === key ? 'ring-2 ring-brand-primary shadow' : 'hover:shadow'
             }`}
           >
@@ -113,27 +114,52 @@ export default function BecomeMemberPage() {
         ))}
       </div>
 
-      <form key={role} onSubmit={handleSubmit} className="card space-y-4">
+      <form key={role} onSubmit={handleSubmit} aria-busy={loading} className="card space-y-4">
         <div className="space-y-1">
           <p className="text-sm font-semibold text-slate-900">{current.label} details</p>
           <p className="text-xs text-slate-600">Required fields to process your application.</p>
         </div>
         <div className="grid gap-3 md:grid-cols-2">
           {current.fields.map((field) => (
-            field.options ? (
-              <select
-                key={field.name}
-                required
-                value={form[field.name] ?? ''}
-                onChange={(e) => updateField(field.name, e.target.value)}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm"
-              >
-                <option value="">{field.placeholder}</option>
-                {field.options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
+            field.type === 'checkbox' ? (
+              <label key={field.name} className="flex items-start gap-3 text-sm text-slate-700 md:col-span-2">
+                <input
+                  required
+                  type="checkbox"
+                  checked={form[field.name] === 'true'}
+                  onChange={(e) => updateField(field.name, String(e.target.checked))}
+                  className="mt-1"
+                />
+                <span>{field.placeholder}</span>
+              </label>
+            ) : (
+              <label key={field.name} className="block space-y-1 text-sm text-slate-700">
+                <span className="block font-medium">{field.placeholder}</span>
+                {field.options ? (
+                  <select
+                    required
+                    value={form[field.name] ?? ''}
+                    onChange={(e) => updateField(field.name, e.target.value)}
+                    className="w-full min-h-11 rounded-md border border-slate-200 bg-gray-200 px-3 py-2 text-sm"
+                  >
+                    <option value="">Select {field.placeholder}</option>
+                    {field.options.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type={field.type || 'text'}
+                    required
+                    placeholder={field.placeholder}
+                    value={form[field.name] ?? ''}
+                    onChange={(e) => updateField(field.name, e.target.value)}
+                    className="w-full min-h-11 rounded-md border border-slate-200 px-3 py-2 text-sm"
+                  />
+                )}
+              </label>
+            )
+          ))}
               </select>
             ) : field.type === 'checkbox' ? (
               <label key={field.name} className="flex items-start gap-3 text-sm text-slate-700 md:col-span-2">
@@ -162,7 +188,7 @@ export default function BecomeMemberPage() {
         <button type="submit" className="btn w-full md:w-auto" disabled={loading}>
           {loading ? 'Submitting...' : `Submit ${current.label} form`}
         </button>
-        {status ? <p className="text-xs text-slate-600">{status}</p> : null}
+        {status ? <p role="status" aria-live="polite" className="text-xs text-slate-600">{status}</p> : null}
       </form>
     </div>
   );
