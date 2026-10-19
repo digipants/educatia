@@ -10,12 +10,14 @@
     "test": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {
+    "@netlify/blobs": "11.1.4",
     "mongodb": "6.3.0",
     "next": "15.5.28",
     "next-auth": "4.24.15",
     "nodemailer": "10.0.9",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "sharp": "0.35.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
