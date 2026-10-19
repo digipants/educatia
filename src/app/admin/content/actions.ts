@@ -7,7 +7,7 @@ import {
   createCmsPost, editCmsPost, submitCmsPost, publishCmsPost,
   archiveCmsPost, returnCmsPostToDraft, withCmsAccess
 } from '@/lib/cmsStore';
-import { isCmsId, parseCmsFields, CmsValidationError } from '@/lib/cmsContent';
+import { isCmsId, parseCmsFields, parseCmsPublishChecks, CmsValidationError } from '@/lib/cmsContent';
 import { parseCmsActionForm } from '@/lib/cmsActionForm';
 
 
@@ -69,12 +69,14 @@ export async function publishCmsPostAction(form: FormData) {
   let id: string | null = null;
   let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
-    const values = parseCmsActionForm(form, ['postId', 'expectedRevision', 'evidenceConfirmed']);
-    if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision) ||
-      values.evidenceConfirmed !== 'yes') throw new CmsValidationError('Invalid request');
+    const values = parseCmsActionForm(form, [
+      'postId', 'expectedRevision', 'sourceVerified', 'claimsAccurate', 'privacyReviewed'
+    ]);
+    if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
     id = values.postId;
+    const checks = parseCmsPublishChecks(values.sourceVerified, values.claimsAccurate, values.privacyReviewed);
     const result = await withCmsAccess('publisher', async (email) =>
-      publishCmsPost(id!, values.expectedRevision, email));
+      publishCmsPost(id!, values.expectedRevision, email, checks));
     if (result.status === 'ok') outcome = result.value === 'saved' ? 'saved' : 'stale';
   } catch { /* Safe generic response. */ }
   return finish(id, outcome);
@@ -84,11 +86,11 @@ export async function returnCmsDraftAction(form: FormData) {
   let id: string | null = null;
   let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
-    const values = parseCmsActionForm(form, ['postId', 'expectedRevision', 'feedback']);
+    const values = parseCmsActionForm(form, ['postId', 'expectedRevision', 'reason']);
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
     id = values.postId;
     const result = await withCmsAccess('publisher', async () =>
-      returnCmsPostToDraft(id!, values.expectedRevision, values.feedback));
+      returnCmsPostToDraft(id!, values.expectedRevision, values.reason), { requirePublishing: false });
     if (result.status === 'ok') outcome = result.value === 'saved' ? 'saved' : 'stale';
   } catch { /* Generic response, no review content logged. */ }
   return finish(id, outcome);
@@ -102,7 +104,7 @@ export async function archiveCmsPostAction(form: FormData) {
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
     id = values.postId;
     const result = await withCmsAccess('publisher', async () =>
-      archiveCmsPost(id!, values.expectedRevision));
+      archiveCmsPost(id!, values.expectedRevision), { requirePublishing: false });
     if (result.status === 'ok') outcome = result.value === 'saved' ? 'saved' : 'stale';
   } catch { /* Safe generic response. */ }
   return finish(id, outcome);
