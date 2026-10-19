@@ -30,7 +30,9 @@ test('draft, review, publish and archive paths are separated and revision-protec
   assert.match(actions, /withCmsAccess\('publisher'/);
   assert.match(actions, /withCmsAccess\('editor'/);
   assert.match(actions, /evidenceConfirmed !== 'yes'/);
-  assert.match(actions, /new Set\(received\).size !== received.length/);
+  assert.match(actions, /parseCmsActionFields\(Array.from\(form.entries\(\)\), keys\)/);
+  const model = await read('src/lib/cmsContent.ts');
+  assert.match(model, /new Set\(keys\).size !== keys.length/);
 });
 
 test('public site displays only published records and no unsupported example posts', async () => {
