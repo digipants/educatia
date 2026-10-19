@@ -11,7 +11,7 @@ export function parseCmsActionForm(form: FormData, keys: readonly string[]): Rec
   const expected = new Set(keys);
   const values = new Map<string, string>();
   let frameworkFields = 0;
-  for (const [key, value] of form.entries()) {
+  form.forEach((value, key) => {
     if (actionMetadataPattern.test(key)) {
       frameworkFields++;
       if (frameworkFields > MAX_METADATA_FIELDS || typeof value !== 'string' ||
@@ -22,7 +22,7 @@ export function parseCmsActionForm(form: FormData, keys: readonly string[]): Rec
       throw new CmsActionFormError('Invalid request');
     }
     values.set(key, value);
-  }
+  });
   if (values.size !== expected.size) throw new CmsActionFormError('Invalid request');
   return Object.fromEntries(values);
 }
