@@ -48,6 +48,57 @@ test('a database authorization failure returns only a generic CMS error', async 
   }
 });
 
+test('generic MongoDB server failures log only the numeric server code', async () => {
+  const config = getCmsConfiguration({
+    CMS_CONTENT_ENABLED: 'true',
+    CMS_PUBLISHING_ENABLED: 'false',
+    CMS_EDITOR_EMAILS: 'editor@example.test',
+    MONGODB_URI: 'mongodb://localhost/educatia',
+    GOOGLE_CLIENT_ID: 'test',
+    GOOGLE_CLIENT_SECRET: 'test',
+    NEXTAUTH_SECRET: '32-chars-minimum-test-secret-safe-only',
+    NEXTAUTH_URL: 'https://educatia.example.test'
+  });
+  const calls = [];
+  const original = console.warn;
+  console.warn = (...args) => { calls.push(args); };
+  try {
+    const error = databaseError('MongoServerError', 8000, 'mongodb://sensitive-host/private detail');
+    assert.deepEqual(await withCmsStaff(config, 'editor@example.test', 'editor',
+      async () => { throw error; }), { status: 'error' });
+    assert.deepEqual(calls, [[
+      'educatia_cms_operation_failure', 'database_server_error', 'mongo_code_8000'
+    ]]);
+    assert.equal(JSON.stringify(calls).includes('sensitive-host'), false);
+    assert.equal(JSON.stringify(calls).includes('private detail'), false);
+  } finally {
+    console.warn = original;
+  }
+});
+
+test('malformed MongoDB server codes are not written to logs', async () => {
+  const config = getCmsConfiguration({
+    CMS_CONTENT_ENABLED: 'true',
+    CMS_PUBLISHING_ENABLED: 'false',
+    CMS_EDITOR_EMAILS: 'editor@example.test',
+    MONGODB_URI: 'mongodb://localhost/educatia',
+    GOOGLE_CLIENT_ID: 'test',
+    GOOGLE_CLIENT_SECRET: 'test',
+    NEXTAUTH_SECRET: '32-chars-minimum-test-secret-safe-only',
+    NEXTAUTH_URL: 'https://educatia.example.test'
+  });
+  const calls = [];
+  const original = console.warn;
+  console.warn = (...args) => { calls.push(args); };
+  try {
+    const error = databaseError('MongoServerError', 'private-data');
+    await withCmsStaff(config, 'editor@example.test', 'editor', async () => { throw error; });
+    assert.deepEqual(calls, [['educatia_cms_operation_failure', 'database_server_error']]);
+  } finally {
+    console.warn = original;
+  }
+});
+
 test('database connector shares in-flight connect and bounds per-instance resources', async () => {
   const source = await readFile(new URL('../src/lib/server.ts', import.meta.url), 'utf8');
   assert.match(source, /pendingConnection \?\? \(pendingConnection = openClient\(\)\)/);
