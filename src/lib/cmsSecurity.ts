@@ -68,12 +68,20 @@ export function isVerifiedGoogleCmsStaff(
 /** Fixed, non-sensitive categories only. Never log error messages or connection metadata. */
 export function classifyCmsOperationFailure(error: unknown): string {
   const details = error && typeof error === 'object'
-    ? error as { name?: unknown; code?: unknown }
+    ? error as { name?: unknown; code?: unknown; message?: unknown }
     : {};
   const name = details.name;
   if (name === 'MongoServerError') {
     if (details.code === 18) return 'database_authentication';
     if (details.code === 13) return 'database_permission';
+    if (details.code === 8000 && typeof details.message === 'string') {
+      if (/\b(?:bad auth|authentication failed)\b/i.test(details.message)) {
+        return 'database_authentication';
+      }
+      if (/\b(?:not authorized|not permitted)\b/i.test(details.message)) {
+        return 'database_permission';
+      }
+    }
     return 'database_server_error';
   }
   if (name === 'MongoServerSelectionError') return 'database_unreachable';

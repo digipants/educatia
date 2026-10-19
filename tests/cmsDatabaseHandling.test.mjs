@@ -11,6 +11,8 @@ test('CMS database failures are separated into safe operational categories', () 
   const cases = [
     [databaseError('MongoServerError', 18), 'database_authentication'],
     [databaseError('MongoServerError', 13), 'database_permission'],
+    [databaseError('MongoServerError', 8000, 'bad auth : Authentication failed.'), 'database_authentication'],
+    [databaseError('MongoServerError', 8000, 'not authorized on educatia to execute command'), 'database_permission'],
     [databaseError('MongoServerError', 999), 'database_server_error'],
     [databaseError('MongoServerSelectionError'), 'database_unreachable'],
     [databaseError('MongoNetworkTimeoutError'), 'database_timeout'],
@@ -21,6 +23,32 @@ test('CMS database failures are separated into safe operational categories', () 
     [null, 'unexpected']
   ];
   for (const [error, expected] of cases) assert.equal(classifyCmsOperationFailure(error), expected);
+});
+
+test('Atlas authentication failures are classified without logging server messages', async () => {
+  const config = getCmsConfiguration({
+    CMS_CONTENT_ENABLED: 'true',
+    CMS_PUBLISHING_ENABLED: 'false',
+    CMS_EDITOR_EMAILS: 'editor@example.test',
+    MONGODB_URI: 'mongodb://localhost/educatia',
+    GOOGLE_CLIENT_ID: 'test',
+    GOOGLE_CLIENT_SECRET: 'test',
+    NEXTAUTH_SECRET: '32-chars-minimum-test-secret-safe-only',
+    NEXTAUTH_URL: 'https://educatia.example.test'
+  });
+  const calls = [];
+  const original = console.warn;
+  console.warn = (...args) => { calls.push(args); };
+  try {
+    const message = 'bad auth : Authentication failed. private-host.example';
+    assert.deepEqual(await withCmsStaff(config, 'editor@example.test', 'editor',
+      async () => { throw databaseError('MongoServerError', 8000, message); }), { status: 'error' });
+    assert.deepEqual(calls, [['educatia_cms_operation_failure', 'database_authentication']]);
+    assert.equal(JSON.stringify(calls).includes(message), false);
+    assert.equal(JSON.stringify(calls).includes('private-host.example'), false);
+  } finally {
+    console.warn = original;
+  }
 });
 
 test('a database authorization failure returns only a generic CMS error', async () => {
