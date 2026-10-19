@@ -9,6 +9,7 @@ export type CmsPost = {
   summary: string;
   body: string;
   evidenceNote: string;
+  reviewFeedback?: string;
   status: CmsStatus;
   authorEmail: string;
   createdAt: Date;
@@ -57,10 +58,11 @@ export function parseEvidenceNote(value: unknown): string {
 
 export function canCmsTransition(
   post: Pick<CmsPost, 'status' | 'authorEmail' | 'evidenceNote'>,
-  action: 'submit' | 'publish' | 'archive',
+  action: 'submit' | 'publish' | 'return' | 'archive',
   actor: string
 ): boolean {
   if (action === 'submit') return post.status === 'draft' && Boolean(post.evidenceNote);
+  if (action === 'return') return post.status === 'review';
   if (action === 'publish') {
     return post.status === 'review' && Boolean(post.evidenceNote) &&
       post.authorEmail.toLowerCase() !== actor.toLowerCase();

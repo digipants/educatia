@@ -33,3 +33,10 @@ test('draft goes to review only with evidence, and publisher may not self-approv
   post.status = 'archived';
   assert.equal(canCmsTransition(post, 'publish', 'publisher@example.org'), false);
 });
+
+test('publisher can return an item under review to draft for correction', () => {
+  const underReview = { status: 'review', authorEmail: 'editor@example.org', evidenceNote: 'Checked' };
+  assert.equal(canCmsTransition(underReview, 'return', 'publisher@example.org'), true);
+  underReview.status = 'draft';
+  assert.equal(canCmsTransition(underReview, 'return', 'publisher@example.org'), false);
+});

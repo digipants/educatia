@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import {
   createCmsPost, editCmsPost, submitCmsPost, publishCmsPost,
-  archiveCmsPost, withCmsAccess
+  archiveCmsPost, returnCmsPostToDraft, withCmsAccess
 } from '@/lib/cmsStore';
 import { isCmsId, parseCmsFields, CmsValidationError } from '@/lib/cmsContent';
 
@@ -82,6 +82,19 @@ export async function publishCmsPostAction(form: FormData) {
       publishCmsPost(id!, values.expectedRevision, email));
     if (result.status === 'ok') return finish(id, result.value === 'saved' ? 'saved' : 'stale');
   } catch { /* Safe generic response. */ }
+  return finish(id, 'error');
+}
+
+export async function returnCmsDraftAction(form: FormData) {
+  let id: string | null = null;
+  try {
+    const values = fields(form, ['postId', 'expectedRevision', 'feedback']);
+    if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
+    id = values.postId;
+    const result = await withCmsAccess('publisher', async () =>
+      returnCmsPostToDraft(id!, values.expectedRevision, values.feedback));
+    if (result.status === 'ok') return finish(id, result.value === 'saved' ? 'saved' : 'stale');
+  } catch { /* Generic response, no review content logged. */ }
   return finish(id, 'error');
 }
 

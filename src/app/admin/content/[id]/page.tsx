@@ -6,7 +6,7 @@ import { getCmsConfiguration } from '@/lib/cmsSecurity';
 import { authOptions } from '@/lib/auth';
 import { CmsAuthButton } from '../CmsAuthButton';
 import {
-  editCmsDraftAction, submitCmsReviewAction, publishCmsPostAction, archiveCmsPostAction
+  editCmsDraftAction, submitCmsReviewAction, publishCmsPostAction, archiveCmsPostAction, returnCmsDraftAction
 } from '../actions';
 
 export const dynamic = 'force-dynamic';
@@ -59,6 +59,9 @@ export default async function CmsEditPage({ params, searchParams }: {
     {post.status === 'draft' ? <>
       <section className="card space-y-3">
         <h2 className="text-xl font-semibold">Edit draft</h2>
+        {post.reviewFeedback ? <p role="status" className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+          Reviewer feedback: {post.reviewFeedback}
+        </p> : null}
         <form action={editCmsDraftAction} className="space-y-4">
           <input type="hidden" name="postId" value={post.id} />
           <input type="hidden" name="expectedRevision" value={post.revision} />
@@ -118,6 +121,17 @@ export default async function CmsEditPage({ params, searchParams }: {
           <input type="hidden" name="postId" value={post.id} />
           <input type="hidden" name="expectedRevision" value={post.revision} />
           <button type="submit" className="btn">Archive / unpublish</button>
+        </form>
+      ) : null}
+      {post.status === 'review' && mayPublish ? (
+        <form action={returnCmsDraftAction} className="space-y-3 border-t border-slate-100 pt-4">
+          <input type="hidden" name="postId" value={post.id} />
+          <input type="hidden" name="expectedRevision" value={post.revision} />
+          <label className="block space-y-1 text-sm font-medium">Request changes
+            <textarea name="feedback" required rows={3} maxLength={400}
+              className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" />
+          </label>
+          <button className="btn" type="submit">Return to draft</button>
         </form>
       ) : null}
       {post.status === 'archived' ? <p className="text-sm text-slate-600">This item is no longer public.</p> : null}

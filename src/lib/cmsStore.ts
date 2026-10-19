@@ -52,7 +52,7 @@ export async function readCmsPost(id: string) {
     if (!post) return null;
     return {
       id: post._id, revision: post.revision, title: post.title, kind: post.kind,
-      summary: post.summary, body: post.body, evidenceNote: post.evidenceNote,
+      summary: post.summary, body: post.body, evidenceNote: post.evidenceNote, reviewFeedback: post.reviewFeedback ?? '',
       status: post.status, authorEmail: post.authorEmail,
       updatedAt: post.updatedAt.toISOString(), publishedAt: post.publishedAt?.toISOString() ?? null
     };
@@ -64,7 +64,7 @@ export async function createCmsPost(id: string, fields: CmsFields, actor: string
   const now = new Date();
   const post: CmsPost = {
     _id: id, revision: randomUUID(), ...fields,
-    evidenceNote: '', status: 'draft', authorEmail: actor,
+    evidenceNote: '', reviewFeedback: '', status: 'draft', authorEmail: actor,
     createdAt: now, updatedAt: now
   };
   try {
@@ -95,6 +95,22 @@ export async function submitCmsPost(
   const result = await (await cmsCollection()).updateOne(
     { _id: id, revision: expectedRevision, status: 'draft' },
     { $set: { status: 'review', evidenceNote, updatedAt: new Date(), revision: randomUUID() } }
+  );
+  return result.modifiedCount === 1 ? 'saved' : 'stale';
+}
+
+export async function returnCmsPostToDraft(
+  id: string, expectedRevision: string, feedback: string
+): Promise<StoreResult> {
+  if (!isCmsId(id) || !isCmsId(expectedRevision)) return 'stale';
+  const reviewFeedback = parseEvidenceNote(feedback);
+  const now = new Date();
+  const result = await (await cmsCollection()).updateOne(
+    { _id: id, revision: expectedRevision, status: 'review' },
+    { $set: {
+      status: 'draft', reviewFeedback, evidenceNote: '',
+      updatedAt: now, revision: randomUUID()
+    } }
   );
   return result.modifiedCount === 1 ? 'saved' : 'stale';
 }
