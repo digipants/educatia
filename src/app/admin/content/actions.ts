@@ -29,6 +29,7 @@ function finish(id: string | null, status: 'saved' | 'error' | 'stale') {
 
 export async function createCmsDraftAction(form: FormData) {
   let id: string | null = null;
+  let saved = false;
   try {
     const values = fields(form, ['postId', 'kind', 'title', 'summary', 'body']);
     if (!isCmsId(values.postId)) throw new CmsValidationError('Invalid request');
@@ -37,13 +38,14 @@ export async function createCmsDraftAction(form: FormData) {
       kind: values.kind, title: values.title, summary: values.summary, body: values.body
     });
     const result = await withCmsAccess('editor', async (email) => createCmsPost(id!, content, email));
-    if (result.status === 'ok' && result.value === 'saved') return finish(id, 'saved');
+    if (result.status === 'ok' && result.value === 'saved') saved = true;
   } catch { /* Generic response; do not log draft or applicant details. */ }
-  return finish(null, 'error');
+  return finish(saved ? id : null, saved ? 'saved' : 'error');
 }
 
 export async function editCmsDraftAction(form: FormData) {
   let id: string | null = null;
+  let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
     const values = fields(form, ['postId', 'expectedRevision', 'kind', 'title', 'summary', 'body']);
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
@@ -53,26 +55,28 @@ export async function editCmsDraftAction(form: FormData) {
     });
     const result = await withCmsAccess('editor', async () =>
       editCmsPost(id!, values.expectedRevision, content));
-    if (result.status === 'ok') return finish(id, result.value === 'saved' ? 'saved' : 'stale');
+    if (result.status === 'ok') outcome = result.value === 'saved' ? 'saved' : 'stale';
   } catch { /* Safe generic response. */ }
-  return finish(id, 'error');
+  return finish(id, outcome);
 }
 
 export async function submitCmsReviewAction(form: FormData) {
   let id: string | null = null;
+  let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
     const values = fields(form, ['postId', 'expectedRevision', 'evidenceNote']);
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
     id = values.postId;
     const result = await withCmsAccess('editor', async () =>
       submitCmsPost(id!, values.expectedRevision, values.evidenceNote));
-    if (result.status === 'ok') return finish(id, result.value === 'saved' ? 'saved' : 'stale');
+    if (result.status === 'ok') outcome = result.value === 'saved' ? 'saved' : 'stale';
   } catch { /* Safe generic response. */ }
-  return finish(id, 'error');
+  return finish(id, outcome);
 }
 
 export async function publishCmsPostAction(form: FormData) {
   let id: string | null = null;
+  let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
     const values = fields(form, ['postId', 'expectedRevision', 'evidenceConfirmed']);
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision) ||
@@ -80,33 +84,35 @@ export async function publishCmsPostAction(form: FormData) {
     id = values.postId;
     const result = await withCmsAccess('publisher', async (email) =>
       publishCmsPost(id!, values.expectedRevision, email));
-    if (result.status === 'ok') return finish(id, result.value === 'saved' ? 'saved' : 'stale');
+    if (result.status === 'ok') outcome = result.value === 'saved' ? 'saved' : 'stale';
   } catch { /* Safe generic response. */ }
-  return finish(id, 'error');
+  return finish(id, outcome);
 }
 
 export async function returnCmsDraftAction(form: FormData) {
   let id: string | null = null;
+  let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
     const values = fields(form, ['postId', 'expectedRevision', 'feedback']);
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
     id = values.postId;
     const result = await withCmsAccess('publisher', async () =>
       returnCmsPostToDraft(id!, values.expectedRevision, values.feedback));
-    if (result.status === 'ok') return finish(id, result.value === 'saved' ? 'saved' : 'stale');
+    if (result.status === 'ok') outcome = result.value === 'saved' ? 'saved' : 'stale';
   } catch { /* Generic response, no review content logged. */ }
-  return finish(id, 'error');
+  return finish(id, outcome);
 }
 
 export async function archiveCmsPostAction(form: FormData) {
   let id: string | null = null;
+  let outcome: 'saved' | 'stale' | 'error' = 'error';
   try {
     const values = fields(form, ['postId', 'expectedRevision']);
     if (!isCmsId(values.postId) || !isCmsId(values.expectedRevision)) throw new CmsValidationError('Invalid request');
     id = values.postId;
     const result = await withCmsAccess('publisher', async () =>
       archiveCmsPost(id!, values.expectedRevision));
-    if (result.status === 'ok') return finish(id, result.value === 'saved' ? 'saved' : 'stale');
+    if (result.status === 'ok') outcome = result.value === 'saved' ? 'saved' : 'stale';
   } catch { /* Safe generic response. */ }
-  return finish(id, 'error');
+  return finish(id, outcome);
 }
