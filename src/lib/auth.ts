@@ -2,6 +2,7 @@ import 'server-only';
 import type { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { getAdminConfiguration, isVerifiedGoogleAdministrator } from './adminSecurity';
+import { getCmsConfiguration, isVerifiedGoogleCmsStaff } from './cmsSecurity';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -17,12 +18,20 @@ export const authOptions: NextAuthOptions = {
       if (account?.provider !== 'google') return false;
       const configuration = getAdminConfiguration(process.env);
       const googleProfile = profile as { email?: unknown; email_verified?: unknown } | undefined;
-      return configuration.enabled && isVerifiedGoogleAdministrator(
+      const applicationAdmin = configuration.enabled && isVerifiedGoogleAdministrator(
         googleProfile?.email,
         googleProfile?.email_verified,
         user.email,
         configuration.administratorEmails
       );
+      const cms = getCmsConfiguration(process.env);
+      const cmsStaff = cms.enabled && isVerifiedGoogleCmsStaff(
+        googleProfile?.email,
+        googleProfile?.email_verified,
+        user.email,
+        cms
+      );
+      return applicationAdmin || cmsStaff;
     },
     async session({ session, token }) {
       if (session.user) {
