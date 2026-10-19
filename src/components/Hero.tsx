@@ -24,8 +24,8 @@ export default function Hero() {
             >
               Become a Member
             </Link>
-            <Link href="/donate" className="btn">
-              Support Us
+            <Link href="/programs" className="btn">
+              Explore Programs
             </Link>
           </div>
         </div>
