@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { listCmsPosts } from '@/lib/cmsStore';
 import { getCmsConfiguration } from '@/lib/cmsSecurity';
 import { CmsAuthButton } from './CmsAuthButton';
+import { CmsAccessActions } from './CmsAccessActions';
 import { createCmsDraftAction } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -22,8 +23,7 @@ function Status({ status }: { status: string }) {
   return <section className="card mx-auto max-w-xl space-y-4 text-center">
     <h1 className="text-2xl font-semibold">Educatia editorial workspace</h1>
     <p className="text-slate-600">{copy}</p>
-    {status === 'unauthenticated' ? <CmsAuthButton action="sign-in" /> : null}
-    {status === 'unauthorized' ? <CmsAuthButton action="sign-out" /> : null}
+    <CmsAccessActions status={status} />
   </section>;
 }
 
