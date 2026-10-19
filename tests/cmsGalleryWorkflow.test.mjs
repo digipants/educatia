@@ -64,13 +64,14 @@ test('media storage and public publication require explicit independent gates an
     enabled: false, publishingEnabled: false, minorPublishingEnabled: false, storageRegion: null
   });
   const configured = {
-    CMS_CONTENT_ENABLED: 'true', CMS_MEDIA_ENABLED: 'true', CMS_PUBLISHING_ENABLED: 'true',
+    CMS_CONTENT_ENABLED: 'true', CMS_MEDIA_ENABLED: 'true', CMS_PUBLISHING_ENABLED: 'false',
     CMS_MEDIA_PUBLISHING_ENABLED: 'true', CMS_MINOR_MEDIA_PUBLISHING_ENABLED: 'true',
     CMS_MEDIA_STORAGE_REGION: 'ap-southeast-1'
   };
   assert.equal(getCmsGalleryConfiguration(configured).enabled, true);
   assert.equal(getCmsGalleryConfiguration(configured).publishingEnabled, true);
   assert.equal(getCmsGalleryConfiguration(configured).minorPublishingEnabled, true);
+  assert.equal(getCmsGalleryConfiguration({ ...configured, CMS_MEDIA_PUBLISHING_ENABLED: 'false' }).publishingEnabled, false);
   assert.equal(getCmsGalleryConfiguration({ ...configured, CMS_MEDIA_STORAGE_REGION: 'ap-south-1' }).enabled, false);
   assert.equal(getCmsGalleryConfiguration({ ...configured, CMS_MEDIA_ENABLED: 'false' }).publishingEnabled, false);
 });
@@ -141,12 +142,14 @@ test('gallery admin and public paths enforce server authorization, revisions and
   const upload = await read('src/app/api/cms/gallery/[id]/upload/route.ts');
   const media = await read('src/app/api/cms/gallery/[id]/media/[variant]/route.ts');
   assert.match(store, /findOne\(\{ _id: id, kind: 'gallery-photo', revision: expectedRevision, status: 'draft' \}\)/);
-  assert.match(store, /if \(!mediaEnabled\(\)\) return \{ status: 'unavailable' \}/);
+  assert.match(store, /if \(!configuration\.enabled\) return \{ status: 'unavailable' \}/);
   assert.match(store, /revision: expectedRevision, status: 'review', mediaState: 'ready'/);
   assert.match(store, /status: 'published', mediaState: 'ready'/);
   assert.match(store, /limit\(60\)/);
   assert.match(actions, /withCmsGalleryAccess\('publisher'/);
   assert.match(actions, /withCmsGalleryAccess\('editor'/);
+  assert.match(store, /requiresGalleryPublishing && !configuration\.publishingEnabled/);
+  assert.match(store, /withCmsAccess\(required, operation, \{ requirePublishing: false \}\)/);
   assert.match(upload, /isSameOriginMutation\(request\)/);
   assert.match(upload, /readBoundedMultipartBytes/);
   assert.match(upload, /withCmsAccess\('editor'/);

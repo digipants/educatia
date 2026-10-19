@@ -25,10 +25,6 @@ async function galleryCollection() {
   });
 }
 
-function mediaEnabled() {
-  return getCmsGalleryConfiguration(process.env).enabled;
-}
-
 function audit(event: GalleryAuditEvent['event'], actorEmail: string): GalleryAuditEvent {
   return { event, actorEmail, at: new Date() };
 }
@@ -38,8 +34,13 @@ export async function withCmsGalleryAccess<T>(
   operation: (email: string) => Promise<T>,
   options: { requirePublishing?: boolean } = {}
 ) {
-  if (!mediaEnabled()) return { status: 'unavailable' } as const;
-  return withCmsAccess(required, operation, options);
+  const configuration = getCmsGalleryConfiguration(process.env);
+  if (!configuration.enabled) return { status: 'unavailable' } as const;
+  const requiresGalleryPublishing = required === 'publisher' && options.requirePublishing !== false;
+  if (requiresGalleryPublishing && !configuration.publishingEnabled) {
+    return { status: 'unavailable' } as const;
+  }
+  return withCmsAccess(required, operation, { requirePublishing: false });
 }
 
 function galleryStaff<T>(required: 'editor' | 'publisher', operation: (email: string) => Promise<T>, requirePublishing?: boolean) {
