@@ -52,6 +52,26 @@ export function parseCmsFields(values: Record<string, unknown>): CmsFields {
   };
 }
 
+
+/**
+ * React/Next Server Actions include framework-owned $ACTION_ form fields.
+ * Ignore only those; do not weaken the list of accepted application fields.
+ */
+export function parseCmsActionFields(
+  entries: Array<[string, unknown]>,
+  expectedKeys: readonly string[]
+): Record<string, string> {
+  const supplied = entries.filter(([key]) => !key.startsWith('$ACTION_'));
+  const keys = supplied.map(([key]) => key);
+  if (keys.length !== expectedKeys.length ||
+    keys.some(key => !expectedKeys.includes(key)) ||
+    new Set(keys).size !== keys.length ||
+    supplied.some(([, value]) => typeof value !== 'string')) {
+    throw new CmsValidationError('Invalid request');
+  }
+  return Object.fromEntries(supplied) as Record<string, string>;
+}
+
 export function parseEvidenceNote(value: unknown): string {
   return safeText(value, 400);
 }

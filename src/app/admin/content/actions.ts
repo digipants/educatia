@@ -7,17 +7,10 @@ import {
   createCmsPost, editCmsPost, submitCmsPost, publishCmsPost,
   archiveCmsPost, returnCmsPostToDraft, withCmsAccess
 } from '@/lib/cmsStore';
-import { isCmsId, parseCmsFields, CmsValidationError } from '@/lib/cmsContent';
+import { isCmsId, parseCmsFields, parseCmsActionFields, CmsValidationError } from '@/lib/cmsContent';
 
 function fields(form: FormData, keys: readonly string[]) {
-  const entries = Array.from(form.entries());
-  const received = entries.map(([key]) => key);
-  if (received.length !== keys.length || received.some(key => !keys.includes(key)) ||
-    new Set(received).size !== received.length ||
-    entries.some(([, value]) => typeof value !== 'string')) {
-    throw new CmsValidationError('Invalid request');
-  }
-  return Object.fromEntries(entries) as Record<string, string>;
+  return parseCmsActionFields(Array.from(form.entries()), keys);
 }
 
 function finish(id: string | null, status: 'saved' | 'error' | 'stale') {
