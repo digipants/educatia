@@ -24,6 +24,7 @@ export async function withCmsAccess<T>(required: CmsRole, operation: (email: str
     const email = session?.user?.email;
     return await withCmsStaff(config, email, required, () => operation((email ?? '').trim().toLowerCase()));
   } catch {
+    console.warn('educatia_cms_session_failure');
     return { status: 'error' } as const;
   }
 }

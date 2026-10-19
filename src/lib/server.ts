@@ -6,8 +6,9 @@ let client: MongoClient | null = null;
 export async function getDb() {
   if (!MONGODB_URI) throw new Error('Missing MONGODB_URI');
   if (!client) {
-    client = new MongoClient(MONGODB_URI);
-    await client.connect();
+    const candidate = new MongoClient(MONGODB_URI, { serverSelectionTimeoutMS: 8000 });
+    await candidate.connect();
+    client = candidate;
   }
   return client.db(DB_NAME);
 }

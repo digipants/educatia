@@ -78,5 +78,14 @@ export async function withCmsStaff<T>(
     return { status: 'unauthorized' };
   }
   try { return { status: 'ok', value: await operation() }; }
-  catch { return { status: 'error' }; }
+  catch (error) {
+    const name = error && typeof error === 'object' ? (error as { name?: unknown }).name : null;
+    const category = name === 'MongoServerSelectionError' ? 'database_unreachable'
+      : name === 'MongoNetworkError' ? 'database_network'
+      : name === 'MongoNetworkTimeoutError' ? 'database_timeout'
+      : name === 'MongoServerError' ? 'database_server_error'
+      : 'unexpected';
+    console.warn('educatia_cms_operation_failure', category);
+    return { status: 'error' };
+  }
 }
