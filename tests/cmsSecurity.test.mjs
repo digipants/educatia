@@ -69,3 +69,29 @@ test('the OAuth callback keeps CMS staff independent of applicant feature flags'
   assert.match(vars, /^APPLICATION_STORAGE_ENABLED=false$/m);
   assert.match(vars, /^ADMIN_APPLICATIONS_ENABLED=false$/m);
 });
+
+test('CMS operational errors log only a fixed category, never exception details', async () => {
+  const configuration = getCmsConfiguration(env);
+  const calls = [];
+  const original = console.warn;
+  console.warn = (...items) => { calls.push(items); };
+  try {
+    const error = new Error('sensitive test-only connection detail');
+    error.name = 'MongoServerSelectionError';
+    const result = await withCmsStaff(configuration, 'editor@example.org', 'editor', async () => {
+      throw error;
+    });
+    assert.deepEqual(result, { status: 'error' });
+    assert.deepEqual(calls, [['educatia_cms_operation_failure', 'database_unreachable']]);
+  } finally {
+    console.warn = original;
+  }
+});
+
+test('connection client is assigned only after successful MongoDB connect', async () => {
+  const source = await readFile(new URL('../src/lib/server.ts', import.meta.url), 'utf8');
+  assert.match(source, /const candidate = new MongoClient/);
+  assert.match(source, /await candidate\.connect\(\);\s*client = candidate;/);
+  assert.doesNotMatch(source, /client = new MongoClient\(MONGODB_URI\)/);
+  assert.match(source, /serverSelectionTimeoutMS: 8000/);
+});
