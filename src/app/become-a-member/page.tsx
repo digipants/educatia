@@ -160,30 +160,6 @@ export default function BecomeMemberPage() {
               </label>
             )
           ))}
-              </select>
-            ) : field.type === 'checkbox' ? (
-              <label key={field.name} className="flex items-start gap-3 text-sm text-slate-700 md:col-span-2">
-                <input
-                  required
-                  type="checkbox"
-                  checked={form[field.name] === 'true'}
-                  onChange={(e) => updateField(field.name, String(e.target.checked))}
-                  className="mt-1"
-                />
-                <span>{field.placeholder}</span>
-              </label>
-            ) : (
-              <input
-                key={field.name}
-                type={field.type || 'text'}
-                required
-                placeholder={field.placeholder}
-                value={form[field.name] ?? ''}
-                onChange={(e) => updateField(field.name, e.target.value)}
-                className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm"
-              />
-            )
-          ))}
         </div>
         <button type="submit" className="btn w-full md:w-auto" disabled={loading}>
           {loading ? 'Submitting...' : `Submit ${current.label} form`}
