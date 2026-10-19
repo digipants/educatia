@@ -38,7 +38,7 @@ test('draft, review, publish and archive paths are separated and revision-protec
 test('public site displays only published records and no unsupported example posts', async () => {
   const server = await read('src/lib/cmsStore.ts');
   assert.match(server, /process\.env\.CMS_CONTENT_ENABLED !== 'true'/);
-  assert.match(server, /find\(\{ status: 'published' \}/);
+  assert.match(server, /find\(\{ kind: \{ \$in: \['announcement', 'program-update'\] \}, status: 'published' \}/);
   assert.match(server, /\.limit\(12\)/);
   const news = await read('src/app/news-updates/page.tsx');
   assert.match(news, /listPublishedCmsPosts/);

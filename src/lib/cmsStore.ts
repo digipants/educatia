@@ -7,6 +7,7 @@ import { getCmsConfiguration, getCmsRole, withCmsStaff, type CmsRole } from './c
 import {
   canCmsTransition, type CmsFields, type CmsPost, isCmsId, parseEvidenceNote
 } from './cmsContent';
+import type { CmsKind } from './cmsContent';
 
 type StoreResult = 'saved' | 'stale' | 'duplicate';
 
@@ -16,23 +17,30 @@ async function cmsCollection() {
   });
 }
 
-export async function withCmsAccess<T>(required: CmsRole, operation: (email: string) => Promise<T>) {
+export async function withCmsAccess<T>(
+  required: CmsRole,
+  operation: (email: string) => Promise<T>,
+  options: { requirePublishing?: boolean } = {}
+) {
   const config = getCmsConfiguration(process.env);
   if (!config.enabled) return { status: 'unavailable' } as const;
   try {
     const session = await getServerSession(authOptions);
     const email = session?.user?.email;
-    return await withCmsStaff(config, email, required, () => operation((email ?? '').trim().toLowerCase()));
+    return await withCmsStaff(config, email, required, () => operation((email ?? '').trim().toLowerCase()), options);
   } catch {
     console.warn('educatia_cms_session_failure');
     return { status: 'error' } as const;
   }
 }
 
-export async function listCmsPosts() {
+export async function listCmsPosts(kind?: CmsKind) {
   return withCmsAccess('editor', async () => {
+    const filter = kind ? { kind } : { kind: { $in: ['announcement', 'program-update'] as const } };
     const posts = await (await cmsCollection())
-      .find({}, { projection: { title: 1, kind: 1, status: 1, authorEmail: 1, updatedAt: 1, revision: 1 } })
+      .find(filter, {
+        projection: { title: 1, kind: 1, status: 1, authorEmail: 1, updatedAt: 1, revision: 1 }
+      })
       .sort({ updatedAt: -1 }).limit(50).toArray();
     return posts.map(post => ({
       id: post._id,
@@ -49,7 +57,9 @@ export async function listCmsPosts() {
 export async function readCmsPost(id: string) {
   return withCmsAccess('editor', async () => {
     if (!isCmsId(id)) return null;
-    const post = await (await cmsCollection()).findOne({ _id: id });
+    const post = await (await cmsCollection()).findOne({
+      _id: id, kind: { $in: ['announcement', 'program-update'] }
+    });
     if (!post) return null;
     return {
       id: post._id, revision: post.revision, title: post.title, kind: post.kind,
@@ -82,7 +92,7 @@ export async function editCmsPost(
 ): Promise<StoreResult> {
   if (!isCmsId(id) || !isCmsId(expectedRevision)) return 'stale';
   const result = await (await cmsCollection()).updateOne(
-    { _id: id, revision: expectedRevision, status: 'draft' },
+    { _id: id, revision: expectedRevision, status: 'draft', kind: { $in: ['announcement', 'program-update'] } },
     { $set: { ...fields, updatedAt: new Date(), revision: randomUUID() } }
   );
   return result.modifiedCount === 1 ? 'saved' : 'stale';
@@ -94,7 +104,7 @@ export async function submitCmsPost(
   if (!isCmsId(id) || !isCmsId(expectedRevision)) return 'stale';
   const evidenceNote = parseEvidenceNote(note);
   const result = await (await cmsCollection()).updateOne(
-    { _id: id, revision: expectedRevision, status: 'draft' },
+    { _id: id, revision: expectedRevision, status: 'draft', kind: { $in: ['announcement', 'program-update'] } },
     { $set: { status: 'review', evidenceNote, updatedAt: new Date(), revision: randomUUID() } }
   );
   return result.modifiedCount === 1 ? 'saved' : 'stale';
@@ -107,7 +117,7 @@ export async function returnCmsPostToDraft(
   const reviewFeedback = parseEvidenceNote(feedback);
   const now = new Date();
   const result = await (await cmsCollection()).updateOne(
-    { _id: id, revision: expectedRevision, status: 'review' },
+    { _id: id, revision: expectedRevision, status: 'review', kind: { $in: ['announcement', 'program-update'] } },
     { $set: {
       status: 'draft', reviewFeedback, evidenceNote: '',
       updatedAt: now, revision: randomUUID()
@@ -121,13 +131,14 @@ export async function publishCmsPost(
 ): Promise<StoreResult> {
   if (!isCmsId(id) || !isCmsId(expectedRevision)) return 'stale';
   const collection = await cmsCollection();
-  const post = await collection.findOne({ _id: id, revision: expectedRevision }, {
+  const textKinds = { $in: ['announcement', 'program-update'] as const };
+  const post = await collection.findOne({ _id: id, revision: expectedRevision, kind: textKinds }, {
     projection: { status: 1, authorEmail: 1, evidenceNote: 1 }
   });
   if (!post || !canCmsTransition(post, 'publish', reviewer)) return 'stale';
   const now = new Date();
   const result = await collection.updateOne(
-    { _id: id, revision: expectedRevision, status: 'review' },
+    { _id: id, revision: expectedRevision, status: 'review', kind: textKinds },
     { $set: { status: 'published', reviewedBy: reviewer, publishedAt: now, updatedAt: now, revision: randomUUID() } }
   );
   return result.modifiedCount === 1 ? 'saved' : 'stale';
@@ -137,7 +148,7 @@ export async function archiveCmsPost(id: string, expectedRevision: string): Prom
   if (!isCmsId(id) || !isCmsId(expectedRevision)) return 'stale';
   const now = new Date();
   const result = await (await cmsCollection()).updateOne(
-    { _id: id, revision: expectedRevision, status: 'published' },
+    { _id: id, revision: expectedRevision, status: 'published', kind: { $in: ['announcement', 'program-update'] } },
     { $set: { status: 'archived', archivedAt: now, updatedAt: now, revision: randomUUID() } }
   );
   return result.modifiedCount === 1 ? 'saved' : 'stale';
@@ -147,7 +158,7 @@ export async function listPublishedCmsPosts() {
   if (process.env.CMS_CONTENT_ENABLED !== 'true') return [];
   try {
     const posts = await (await cmsCollection())
-      .find({ status: 'published' }, {
+      .find({ kind: { $in: ['announcement', 'program-update'] }, status: 'published' }, {
         projection: { title: 1, summary: 1, body: 1, kind: 1, publishedAt: 1 }
       })
       .sort({ publishedAt: -1 }).limit(12).toArray();

@@ -1,6 +1,6 @@
 # Educatia CMS production onboarding (internal)
 
-**Purpose:** safely bring the already-implemented text-only editorial CMS online without activating student records, donation processing, media uploads or public publishing before role testing.
+**Purpose:** safely operate the text and photo editorial workspace without activating student records, donation processing, media uploads or public publishing before role testing and required approvals.
 
 ## Intended production roles
 
@@ -15,7 +15,7 @@
 - Production Netlify must have a valid `MONGODB_URI` for a database user with least-privilege access to the `educatia` database; avoid granting general access to other project databases.
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NEXTAUTH_SECRET` and `NEXTAUTH_URL` must be set as server-side settings; never expose secrets in pull requests, logs, or screenshots. Confirm both staff accounts can access the Google OAuth application and that the callback is exact.
 - `CMS_EDITOR_EMAILS` and `CMS_PUBLISHER_EMAILS` are independent allowlists. These do **not** grant applicant administration privileges.
-- Set `CMS_CONTENT_ENABLED=true` with `CMS_PUBLISHING_ENABLED=false`, and keep `APPLICATION_STORAGE_ENABLED=false`, `ADMIN_APPLICATIONS_ENABLED=false`. Netlify environment changes require a new production build to affect the live functions.
+- Set `CMS_CONTENT_ENABLED=true` with `CMS_PUBLISHING_ENABLED=false`; keep all `CMS_MEDIA_*` switches false and `CMS_MEDIA_STORAGE_REGION` unset until the separate storage/safeguarding approvals are recorded. Keep `APPLICATION_STORAGE_ENABLED=false`, `ADMIN_APPLICATIONS_ENABLED=false`. Netlify environment changes require a new production build to affect the live functions.
 - Verify the production deploy commit hash and that signed-out `/admin/content` asks for a team Google sign-in, rather than leaking drafts or operational diagnostics.
 - From the Editor Google account, sign in and **read** the empty/list dashboard. This read exercises application authentication and MongoDB access. Confirm an unallowlisted Google account is denied, with no CMS data.
 - From the Publisher Google account, sign in and check reviewer visibility but confirm publishing actions remain disabled. Do not save or publish a real update without a verified source.
@@ -25,7 +25,7 @@
 
 - With a safe isolated test dataset or authorized disposable synthetic draft, test draft, edit, submit, reject/return, distinct-person publisher approval, publication, archive/unpublish and stale-revision conflict. Ensure a plan to delete synthetic drafts; do not leave them as misleading content.
 - When all checks pass and the team has accepted the publishing responsibilities, explicitly switch `CMS_PUBLISHING_ENABLED=true`, and verify the new production deploy. Do not bypass the separate reviewer requirement.
-- Published content must be verified, non-sensitive and free of identifiable children's details; the v1 CMS is text-only. Actual photos belong to the separately governed media-library roadmap.
+- Published text must be verified, non-sensitive and free of identifiable children's details. Photo storage and publication require the separate decisions in `docs/cms-gallery-operations.md`; do not enable photo gates based only on successful code or build checks.
 - Rollback: `CMS_PUBLISHING_ENABLED=false` immediately freezes publishing, and `CMS_CONTENT_ENABLED=false` closes editorial access. Both require a new Netlify deployment to affect already-running production functions. Preserve authentic published records; do not silently erase content.
 
 ## Evidence log

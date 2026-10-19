@@ -103,12 +103,14 @@ export async function withCmsStaff<T>(
   configuration: CmsConfiguration,
   email: unknown,
   required: CmsRole,
-  operation: () => Promise<T>
+  operation: () => Promise<T>,
+  options: { requirePublishing?: boolean } = {}
 ): Promise<{ status: 'ok'; value: T } | { status: 'unavailable' | 'unauthenticated' | 'unauthorized' | 'error' }> {
   if (!configuration.enabled) return { status: 'unavailable' };
   if (typeof email !== 'string' || !email.trim()) return { status: 'unauthenticated' };
   const role = getCmsRole(configuration, email);
-  if (!role || (required === 'publisher' && (role !== 'publisher' || !configuration.publishingEnabled))) {
+  if (!role || (required === 'publisher' && (role !== 'publisher' ||
+      (options.requirePublishing !== false && !configuration.publishingEnabled)))) {
     return { status: 'unauthorized' };
   }
   try { return { status: 'ok', value: await operation() }; }

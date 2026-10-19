@@ -28,10 +28,11 @@ function Status({ status }: { status: CmsAccessStatus }) {
 }
 
 export default async function CmsDashboard({ searchParams }: {
-  searchParams: Promise<{ notice?: string | string[] }>
+  searchParams: Promise<{ notice?: string | string[]; kind?: string | string[] }>
 }) {
-  const result = await listCmsPosts();
   const query = await searchParams;
+  const kind = query.kind === 'announcement' || query.kind === 'program-update' ? query.kind : undefined;
+  const result = await listCmsPosts(kind);
   if (result.status !== 'ok') {
     return <div className="container page-shell py-12"><Status status={result.status} /></div>;
   }
@@ -52,13 +53,27 @@ export default async function CmsDashboard({ searchParams }: {
       ) : null}
       {query.notice === 'error' ? <p role="alert" className="text-sm text-rose-700">The draft could not be created. Check the fields and try again.</p> : null}
     </section>
+    <nav aria-label="Editorial content areas" className="grid gap-3 sm:grid-cols-3">
+      <Link href="/admin/content?kind=announcement" className="card block transition hover:-translate-y-0.5 hover:shadow-md">
+        <h2 className="font-semibold">News &amp; Announcements</h2>
+        <p className="mt-1 text-sm text-slate-600">Prepare factual announcements for review.</p>
+      </Link>
+      <Link href="/admin/content?kind=program-update" className="card block transition hover:-translate-y-0.5 hover:shadow-md">
+        <h2 className="font-semibold">Program Updates</h2>
+        <p className="mt-1 text-sm text-slate-600">Share approved updates about programs.</p>
+      </Link>
+      <Link href="/admin/content/gallery" className="card block transition hover:-translate-y-0.5 hover:shadow-md">
+        <h2 className="font-semibold">Photo Gallery</h2>
+        <p className="mt-1 text-sm text-slate-600">Review genuine activity photos and permissions.</p>
+      </Link>
+    </nav>
     <section className="card space-y-4" aria-labelledby="new-post-heading">
       <h2 id="new-post-heading" className="text-xl font-semibold">New draft</h2>
       <p className="text-sm text-slate-600">Use factual, approved wording only. Do not include names or images of children, private details, or unsupported results.</p>
       <form action={createCmsDraftAction} className="space-y-4">
         <input type="hidden" name="postId" value={randomUUID()} />
         <label className="block space-y-1 text-sm font-medium">Update type
-          <select name="kind" className={classes} defaultValue="announcement">
+          <select name="kind" className={classes} defaultValue={kind ?? 'announcement'}>
             <option value="announcement">Announcement</option>
             <option value="program-update">Program update</option>
           </select>
@@ -76,7 +91,8 @@ export default async function CmsDashboard({ searchParams }: {
       </form>
     </section>
     <section className="space-y-3" aria-label="Content drafts and updates">
-      <h2 className="text-xl font-semibold">Recent updates</h2>
+      <h2 className="text-xl font-semibold">{kind === 'announcement' ? 'News & announcements'
+        : kind === 'program-update' ? 'Program updates' : 'Recent updates'}</h2>
       {result.value.map(post => (
         <Link href={`/admin/content/${post.id}`} key={post.id} className="card block">
           <div className="flex flex-wrap justify-between gap-3">
@@ -86,7 +102,9 @@ export default async function CmsDashboard({ searchParams }: {
           <p className="mt-2 text-xs text-slate-600">{post.kind} · Updated {new Intl.DateTimeFormat('en-IN',{dateStyle:'medium',timeZone:'Asia/Kolkata'}).format(new Date(post.updatedAt))}</p>
         </Link>
       ))}
-      {!result.value.length ? <p className="card text-slate-600">No drafts or updates yet.</p> : null}
+      {!result.value.length ? <p className="card text-slate-600">{kind === 'announcement'
+        ? 'No news or announcements yet.'
+        : kind === 'program-update' ? 'No program updates yet.' : 'No drafts or updates yet.'}</p> : null}
     </section>
   </div>;
 }
