@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { CmsAuthButton } from './CmsAuthButton';
 
-type CmsAccessStatus =
+export type CmsAccessStatus =
   | 'unavailable'
   | 'unauthenticated'
   | 'unauthorized'

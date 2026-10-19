@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { listCmsPosts } from '@/lib/cmsStore';
 import { getCmsConfiguration } from '@/lib/cmsSecurity';
 import { CmsAuthButton } from './CmsAuthButton';
-import { CmsAccessActions } from './CmsAccessActions';
+import { CmsAccessActions, type CmsAccessStatus } from './CmsAccessActions';
 import { createCmsDraftAction } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 const classes = 'block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900';
-function Status({ status }: { status: string }) {
+function Status({ status }: { status: CmsAccessStatus }) {
   const copy = status === 'unavailable' ? 'The editorial workspace is not yet available.'
     : status === 'unauthenticated' ? 'Sign in with an authorized Google account.'
       : status === 'unauthorized' ? 'This account cannot access the editorial workspace.'
