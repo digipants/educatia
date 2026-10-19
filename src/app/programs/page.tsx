@@ -40,7 +40,7 @@ const menu = [
 ];
 
 // This lists only published program categories; it makes no outcome or
-// accreditation claims.
+// institutional endorsements.
 const programListSchema = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
