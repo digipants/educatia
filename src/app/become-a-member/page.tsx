@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { submitForm } from '@/lib/formSubmission';
+import { SpamTrapField, readSpamTrap } from '@/components/SpamTrapField';
 
 type RoleKey = 'student' | 'volunteer';
 type RoleField = {
@@ -65,6 +66,7 @@ export default function BecomeMemberPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const spamTrap = readSpamTrap(e.currentTarget as HTMLFormElement);
     try {
       setLoading(true);
       setStatus('');
@@ -72,7 +74,7 @@ export default function BecomeMemberPage() {
         source: 'Become a Member',
         formType: roles[role].label,
         data: form
-      });
+      }, spamTrap);
       setStatus('Submitted successfully. We will contact you shortly.');
       setForm({});
     } catch (error: any) {
@@ -115,6 +117,7 @@ export default function BecomeMemberPage() {
       </div>
 
       <form key={role} onSubmit={handleSubmit} aria-busy={loading} className="card space-y-4">
+      <SpamTrapField />
         <div className="space-y-1">
           <p className="text-sm font-semibold text-slate-900">{current.label} details</p>
           <p className="text-xs text-slate-600">Required fields to process your application.</p>

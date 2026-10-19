@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { submitForm } from '@/lib/formSubmission';
+import { SpamTrapField, readSpamTrap } from '@/components/SpamTrapField';
 
 export default function ParentForm() {
   const [fullName, setFullName] = useState('');
@@ -12,6 +13,7 @@ export default function ParentForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const spamTrap = readSpamTrap(e.currentTarget as HTMLFormElement);
     try {
       setLoading(true);
       setStatus('');
@@ -23,7 +25,7 @@ export default function ParentForm() {
           studentName,
           interestsOrNeeds: notes
         }
-      });
+      }, spamTrap);
       setStatus('Submitted successfully. We will contact you shortly.');
       setFullName('');
       setStudentName('');
@@ -37,6 +39,7 @@ export default function ParentForm() {
 
   return (
     <form onSubmit={handleSubmit} aria-busy={loading} className="card space-y-3">
+      <SpamTrapField />
       <h3 className="text-lg font-semibold">Parent</h3>
       <input
         required
