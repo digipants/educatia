@@ -211,8 +211,8 @@ export default function Home() {
           <div className="space-y-3 p-6">
             <h2 className="text-xl font-semibold">Latest News and Updates</h2>
             <p className="text-sm text-slate-700">
-              Follow school visits, district launches, student milestones,
-              volunteer stories, and exam outcomes.
+              Visit our news page for updates as they become available,
+              or contact the team about current opportunities.
             </p>
             <Link
               href="/news-updates"

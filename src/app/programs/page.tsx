@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { createPageMetadata } from '@/lib/seo';
+import { createPageMetadata, siteUrl } from '@/lib/seo';
 
 export const metadata = createPageMetadata({
   title: 'Programs',
@@ -39,9 +39,26 @@ const menu = [
   }
 ];
 
+// This lists only published program categories; it makes no outcome or
+// accreditation claims.
+const programListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: menu.map((program, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: program.title,
+    url: `${siteUrl}${program.href}`
+  }))
+};
+
 export default function ProgramsPage() {
   return (
     <div className="page-shell container py-12 space-y-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(programListSchema).replace(/</g, '\\u003c') }}
+      />
       <section className="grid gap-6 md:grid-cols-2 items-center">
         <div className="space-y-3">
           <p className="text-sm font-semibold uppercase tracking-wide text-sky-700">Programs</p>
@@ -75,9 +92,25 @@ export default function ProgramsPage() {
               <Link href={item.href} className="btn w-full text-center">
                 Explore {item.title}
               </Link>
+              <Link href="/contact" aria-label={`Ask about ${item.title}`} className="inline-block text-sm font-semibold text-sky-700 underline underline-offset-4 hover:text-sky-900">
+                Ask about this program
+              </Link>
             </div>
           </article>
         ))}
+      </section>
+
+      <section className="card space-y-4" aria-labelledby="program-next-step">
+        <h2 id="program-next-step" className="text-xl font-semibold text-slate-900">
+          Ready to explore the next step?
+        </h2>
+        <p className="text-slate-700">
+          Contact our team about a program, or tell us if you would like to participate.
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/become-a-member" className="btn">Join or volunteer</Link>
+          <Link href="/contact" className="btn bg-white text-slate-900 ring-1 ring-slate-200 hover:bg-slate-50">Contact our team</Link>
+        </div>
       </section>
     </div>
   );
