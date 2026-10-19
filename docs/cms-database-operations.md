@@ -9,6 +9,16 @@
 - MongoDB Atlas connector could not read projects: the Atlas organization has AI-client access disabled. No Atlas access lists, users or connection strings were changed.
 - This code change improves connection sharing and adds safe error categories; **it does not establish successful production connectivity**.
 
+## Resolution and current status, 19 October 2026
+
+- The production failure was confirmed as MongoDB error 13297 (`DatabaseDifferCase`): Atlas had the empty, case-distinct `Educatia.CMS` namespace while the application uses lowercase `educatia.cmsPosts`. This was not a NextAuth failure or a speculative connection-pool issue.
+- With owner approval, only the empty `Educatia` database and its empty `CMS` collection/index were removed. The existing `educatia.cmsPosts` collection and its index were preserved; the Atlas database user is scoped to the CMS collection.
+- After the namespace correction, the allowlisted Editor loaded the production workspace, created and edited a synthetic draft, and submitted it for review. The separate allowlisted Publisher independently loaded that review item. A signed-out request was denied. These checks confirmed production database reads and writes without publishing test content.
+- Production still has `CMS_CONTENT_ENABLED=true` and `CMS_PUBLISHING_ENABLED=false`; applicant storage/admin remain off and Razorpay remains disabled. No public publication was attempted.
+- Before cleanup, the synthetic review item was inspected in the Editor workspace and Atlas. Its title was `Internal CMS verification - DO NOT PUBLISH (edited)`, status `review`, and SHA-256 of its record UUID was `9313e6db8d969b5f29beb27c9f50b09f2ac52b2362a7ccff8513d0cf46f9efcc`. The exact-ID query matched one record; only that record was deleted with owner approval. Atlas then returned zero matches, the CMS dashboard showed no drafts or updates, and `/news-updates` showed its empty state. No applicant or child data was involved.
+- The Atlas Network Access list still contains an unrestricted `0.0.0.0/0` rule. It was not changed during database recovery. Follow-up security work is tracked separately in [Issue #62](https://github.com/digipants/educatia/issues/62); do not remove the rule until a tested replacement egress route exists.
+- Production return-to-draft, publish and archive are not considered accepted: publishing remains paused. Exercise those transitions only against isolated synthetic data, then obtain documented editorial authorization before changing the production publishing flag.
+
 ## Reproduce without exposing secrets
 
 1. Confirm the exact production deploy commit and check only the presence and scopes (functions/runtime) of `MONGODB_URI`. Never copy its value to a ticket, browser console, chat or GitHub.
