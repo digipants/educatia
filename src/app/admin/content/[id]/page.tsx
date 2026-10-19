@@ -114,7 +114,11 @@ export default async function CmsEditPage({ params, searchParams }: {
             <span>I verified this update against the source, checked its accuracy, and confirmed it contains no unapproved personal details.</span>
           </label>
           <button className="btn" type="submit">Approve and publish</button>
-        </form> : <p className="text-sm text-slate-600">Awaiting a publisher's review.</p>
+        </form> : <p className="text-sm text-slate-600">
+          {publisher && !getCmsConfiguration(process.env).publishingEnabled
+            ? 'Publishing is paused while access checks are completed.'
+            : "Awaiting a publisher's review."}
+        </p>
       ) : null}
       {post.status === 'published' && mayPublish ? (
         <form action={archiveCmsPostAction} className="border-t border-slate-100 pt-4">

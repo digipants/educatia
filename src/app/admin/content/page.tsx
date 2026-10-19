@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { randomUUID } from 'node:crypto';
 import { listCmsPosts } from '@/lib/cmsStore';
+import { getCmsConfiguration } from '@/lib/cmsSecurity';
 import { CmsAuthButton } from './CmsAuthButton';
 import { createCmsDraftAction } from './actions';
 
@@ -44,6 +45,11 @@ export default async function CmsDashboard({ searchParams }: {
         </div>
         <CmsAuthButton action="sign-out" />
       </div>
+      {!getCmsConfiguration(process.env).publishingEnabled ? (
+        <p role="status" className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+          You can prepare and review drafts. Publishing is paused until the team finishes its access checks.
+        </p>
+      ) : null}
       {query.notice === 'error' ? <p role="alert" className="text-sm text-rose-700">The draft could not be created. Check the fields and try again.</p> : null}
     </section>
     <section className="card space-y-4" aria-labelledby="new-post-heading">
