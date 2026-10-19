@@ -30,9 +30,9 @@ function pruneRetryCache(now: number) {
   }
 }
 
-export async function submitForm(payload: FormPayload) {
+export async function submitForm(payload: FormPayload, website = '') {
   const isApplication = payload.formType === 'Student' || payload.formType === 'Volunteer';
-  const requestBody = JSON.stringify(payload);
+  const requestBody = JSON.stringify({ ...payload, website });
   let retryIdentity: string | undefined;
   let idempotencyKey: string | undefined;
 

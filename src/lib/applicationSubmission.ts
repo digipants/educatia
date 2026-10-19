@@ -154,6 +154,7 @@ export function validateSubmission(input: unknown): SubmissionPayload {
     !(['Student', 'Volunteer', 'Parent', 'Teacher'] as string[]).includes(candidate.formType) ||
     typeof candidate.source !== 'string' ||
     !(['Contact Page', 'Become a Member'] as string[]).includes(candidate.source) ||
+    (candidate.website !== undefined && (typeof candidate.website !== 'string' || candidate.website.trim().length > 0)) ||
     !candidate.data ||
     typeof candidate.data !== 'object' ||
     Array.isArray(candidate.data)
