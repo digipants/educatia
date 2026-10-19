@@ -14,7 +14,7 @@ function normalizedEmails(list: string | undefined): string[] {
   const entries = (list ?? '').split(',').map((x) => x.trim().toLowerCase()).filter(Boolean);
   // Invalid entries fail the whole allowlist rather than silently skipping.
   if (entries.some((x) => !emailPattern.test(x))) return [];
-  return [...new Set(entries)];
+  return Array.from(new Set(entries));
 }
 
 function allowedUrl(value: string | undefined) {
