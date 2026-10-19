@@ -65,6 +65,25 @@ export function isVerifiedGoogleCmsStaff(
   return normalized === userEmail.trim().toLowerCase() && getCmsRole(configuration, normalized) !== null;
 }
 
+/** Fixed, non-sensitive categories only. Never log error messages or connection metadata. */
+export function classifyCmsOperationFailure(error: unknown): string {
+  const details = error && typeof error === 'object'
+    ? error as { name?: unknown; code?: unknown }
+    : {};
+  const name = details.name;
+  if (name === 'MongoServerError') {
+    if (details.code === 18) return 'database_authentication';
+    if (details.code === 13) return 'database_permission';
+    return 'database_server_error';
+  }
+  if (name === 'MongoServerSelectionError') return 'database_unreachable';
+  if (name === 'MongoNetworkTimeoutError') return 'database_timeout';
+  if (name === 'MongoNetworkError') return 'database_network';
+  if (name === 'MongoWaitQueueTimeoutError') return 'database_pool_timeout';
+  if (name === 'MongoParseError') return 'database_configuration';
+  return 'unexpected';
+}
+
 export async function withCmsStaff<T>(
   configuration: CmsConfiguration,
   email: unknown,
@@ -79,13 +98,7 @@ export async function withCmsStaff<T>(
   }
   try { return { status: 'ok', value: await operation() }; }
   catch (error) {
-    const name = error && typeof error === 'object' ? (error as { name?: unknown }).name : null;
-    const category = name === 'MongoServerSelectionError' ? 'database_unreachable'
-      : name === 'MongoNetworkError' ? 'database_network'
-      : name === 'MongoNetworkTimeoutError' ? 'database_timeout'
-      : name === 'MongoServerError' ? 'database_server_error'
-      : 'unexpected';
-    console.warn('educatia_cms_operation_failure', category);
+    console.warn('educatia_cms_operation_failure', classifyCmsOperationFailure(error));
     return { status: 'error' };
   }
 }
