@@ -14,8 +14,7 @@ export function getCmsGalleryConfiguration(env: Environment): CmsGalleryConfigur
     configuredRegion === 'ap-southeast-2' ? configuredRegion : null;
   const enabled = env.CMS_CONTENT_ENABLED === 'true' && env.CMS_MEDIA_ENABLED === 'true' &&
     storageRegion !== null;
-  const publishingEnabled = enabled && env.CMS_PUBLISHING_ENABLED === 'true' &&
-    env.CMS_MEDIA_PUBLISHING_ENABLED === 'true';
+  const publishingEnabled = enabled && env.CMS_MEDIA_PUBLISHING_ENABLED === 'true';
   return {
     enabled,
     publishingEnabled,
