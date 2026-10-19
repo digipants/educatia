@@ -16,7 +16,7 @@ export function parseCmsActionForm(form: FormData, keys: readonly string[]): Rec
       frameworkFields++;
       if (frameworkFields > MAX_METADATA_FIELDS || typeof value !== 'string' ||
         value.length > MAX_METADATA_VALUE) throw new CmsActionFormError('Invalid request');
-      continue;
+      return;
     }
     if (!expected.has(key) || values.has(key) || typeof value !== 'string') {
       throw new CmsActionFormError('Invalid request');
